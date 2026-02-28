@@ -1,5 +1,5 @@
 import os, math
-import re
+import numpy as np
 import pygame
 from typing import *  # pyright: ignore[reportWildcardImportFromLibrary]
 import json
@@ -336,38 +336,56 @@ class Timer:
             self.stoped = False
 
 
-def create_gradient(color: str, size: tuple[int, int], radius: int = None, opposite = False, circular = False): # pyright: ignore[reportArgumentType]
+def create_gradient(color: str, size: tuple[int, int], radius: int = None, opposite: bool = False, circular: bool = False):  # pyright: ignore[reportArgumentType]
     """
-    Creates a gradient surface. 
-    If circular=True, pixels outside the radius are transparent.
-    """
-    gradient = pygame.Surface(size, pygame.SRCALPHA)
-    color_obj = pygame.Color(color)
-    color_rgb = (color_obj.r, color_obj.g, color_obj.b)
-
-    width, height = size
-    center_x, center_y = width // 2, height // 2
+    Creates a gradient surface. Optimized with NumPy for vectorization.
+    :color: Color of the gradient
+    :size: size of the surface
     
-    # If no radius is provided, use the distance to the corner
-    max_dist = radius if radius is not None else math.sqrt(center_x**2 + center_y**2)
+    :circular: If True, pixels outside the radius are transparent.
 
-    for x in range(width):
-        for y in range(height):
-            # Calculate distance from center
-            distance = math.sqrt((x - center_x)**2 + (y - center_y)**2)
-            
-            # 1. Check if we should clip to a circle shape
-            if circular and distance > max_dist:
-                alpha = 0
-            else:
-                # 2. Calculate the gradient ratio (clamped between 0 and 1)
-                ratio = min(distance / max_dist, 1.0)
-                
-                if opposite:
-                    alpha = int((1.0 - ratio) * 255) # Solid center -> Transparent edge
-                else:
-                    alpha = int(ratio * 255)         # Transparent center -> Solid edge
-            
-            gradient.set_at((x, y), (*color_rgb, alpha))
+    """
+    width, height = size
+    
+    # Create the surface with SRCALPHA
+    gradient = pygame.Surface(size, pygame.SRCALPHA)
+    
+    # Fill the entire surface with the target color but 0 alpha initially.
+    # This completely avoids needing to set the R, G, B values pixel-by-pixel.
+    color_obj = pygame.Color(color)
+    gradient.fill((color_obj.r, color_obj.g, color_obj.b, 0))
+
+    center_x, center_y = width // 2, height // 2
+    max_dist = radius if radius is not None else math.sqrt(center_x**2 + center_y**2)
+    
+    # Prevent division by zero if radius is 0
+    max_dist = max(max_dist, 0.001)
+
+    # 1. Create a vectorized grid of X and Y coordinates 
+    # np.ogrid creates 1D arrays that broadcast to a 2D grid matching Pygame's (width, height)
+    X, Y = np.ogrid[:width, :height]
+
+    # 2. Calculate distances from center for ALL pixels at once using NumPy broadcasting
+    dist = np.sqrt((X - center_x)**2 + (Y - center_y)**2)
+
+    # 3. Calculate the gradient ratio (clamped between 0 and 1) for the entire array
+    ratio = np.clip(dist / max_dist, 0.0, 1.0)
+
+    # 4. Calculate alpha values across the whole grid
+    if opposite:
+        alpha = (1.0 - ratio) * 255  # Solid center -> Transparent edge
+    else:
+        alpha = ratio * 255          # Transparent center -> Solid edge
+
+    # 5. Apply circular clipping if required
+    if circular:
+        alpha[dist > max_dist] = 0
+
+    # 6. Apply the calculated alpha array directly to the Pygame surface's memory
+    alpha_array = pygame.surfarray.pixels_alpha(gradient)
+    alpha_array[:] = alpha.astype(np.uint8)
+    
+    # IMPORTANT: Delete the reference to unlock the surface memory so Pygame can use it
+    del alpha_array
 
     return gradient
