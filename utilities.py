@@ -1,5 +1,5 @@
-import os
-from numpy import save
+import os, math
+import re
 import pygame
 from typing import *  # pyright: ignore[reportWildcardImportFromLibrary]
 import json
@@ -253,7 +253,7 @@ class SpriteSheet:
     @overload
     def rezize_images(self, size: Tuple[int, int], index: int) -> None: ...
 
-
+   
 #   The actual implementation of the above functions. The index parameter is optional, if it is provided, only the image at that index will be rotated or resized, otherwise all images will be rotated or resized.
 
     def rezize_images(self, size: Tuple[int, int], index: Optional[int] = None) -> None:
@@ -267,11 +267,11 @@ class SpriteSheet:
 
     def rotate_images(self, angle: int, index: int | None = None) -> None:
         if index is not None:
-            self.images[index] = pygame.transform.rotate(self.images[index], angle)
+            self.images[index] = pygame.transform.rotate(self.original_image[index], angle)
             return
         else:
             for i in range(len(self.images)):
-                self.images[i] = pygame.transform.rotate(self.images[i], angle)
+                self.images[i] = pygame.transform.rotate(self.original_image[i], angle)
             return
         
 
@@ -284,18 +284,35 @@ class SpriteSheet:
 # timer class
 
 class Timer:
-    def __init__(self, duration: float):
+    def __init__(self, duration: float, speed: int = 100):
+        """
+        This class measures duration in ms and will tell you how much time is left.
+
+        :duration: in miliseconds
+        """
         self.duration = duration
         self.start_time = None
+        self.saved_time = duration
+        self.speed = speed
+        self.stoped = False
 
     def start(self):
         self.start_time = pygame.time.get_ticks()
 
     def has_elapsed(self) -> bool:
+        if self.stoped:
+            return True
         if self.start_time is None:
             return False
-        elapsed_time = (pygame.time.get_ticks() - self.start_time) / 1000
+        
+        elapsed_time = ((pygame.time.get_ticks() - self.start_time) / 1000) * (self.speed / 100)
         return elapsed_time >= self.duration
+    
+    def get_time_left(self) -> float:
+        if self.start_time is None:
+            return self.duration
+        return self.duration - ((pygame.time.get_ticks() - self.start_time) / 1000) * (self.speed / 100)
+
     
     def reset(self):
         self.start_time = None
@@ -303,3 +320,54 @@ class Timer:
     def change_duration(self, new_duration: float):
         self.duration = new_duration
         self.reset()
+
+    def pause(self):
+        if self.start_time is not None: # if it is running
+            self.duration = self.get_time_left() # Save remaining time
+            self.start_time = None # Mark as paused
+
+    def stop(self):
+        self.stoped = True
+        self.pause()
+
+    def resume(self):
+        if self.start_time is None and not self.stoped: # if it is paused
+            self.start_time = pygame.time.get_ticks()
+            self.stoped = False
+
+
+def create_gradient(color: str, size: tuple[int, int], radius: int = None, opposite = False, circular = False): # pyright: ignore[reportArgumentType]
+    """
+    Creates a gradient surface. 
+    If circular=True, pixels outside the radius are transparent.
+    """
+    gradient = pygame.Surface(size, pygame.SRCALPHA)
+    color_obj = pygame.Color(color)
+    color_rgb = (color_obj.r, color_obj.g, color_obj.b)
+
+    width, height = size
+    center_x, center_y = width // 2, height // 2
+    
+    # If no radius is provided, use the distance to the corner
+    max_dist = radius if radius is not None else math.sqrt(center_x**2 + center_y**2)
+
+    for x in range(width):
+        for y in range(height):
+            # Calculate distance from center
+            distance = math.sqrt((x - center_x)**2 + (y - center_y)**2)
+            
+            # 1. Check if we should clip to a circle shape
+            if circular and distance > max_dist:
+                alpha = 0
+            else:
+                # 2. Calculate the gradient ratio (clamped between 0 and 1)
+                ratio = min(distance / max_dist, 1.0)
+                
+                if opposite:
+                    alpha = int((1.0 - ratio) * 255) # Solid center -> Transparent edge
+                else:
+                    alpha = int(ratio * 255)         # Transparent center -> Solid edge
+            
+            gradient.set_at((x, y), (*color_rgb, alpha))
+
+    return gradient
