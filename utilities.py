@@ -55,7 +55,7 @@ def scale(
 
     raise TypeError("Value must be an int, float, or tuple of int/float.")
 
-
+    
 # =====================================================
 # Text rendering
 # =====================================================

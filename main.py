@@ -1,6 +1,6 @@
-import time
 import pygame
-import sys, os, math
+import sys, os, math, random
+import numpy as np
 import utilities as utils
 import objects
 
@@ -41,7 +41,8 @@ class Froststep:
         self.beacon_storage = 0
         
         # We only need the base image for the light. 
-        self.beacon_light_base = utils.create_gradient("yellow", (1000, 1000), radius=300, opposite=True, circular=True)
+        self.beacon_light_radius = 200
+        self.beacon_light_base = utils.create_gradient("white", (1000, 1000), radius=self.beacon_light_radius, opposite=True, circular=True)
         self.cached_beacon_light = None
         self.last_scale_overall = -1 # Used to check if we need to rescale the light
 
@@ -49,6 +50,11 @@ class Froststep:
         self.player = objects.player((self.map_size[0] // 3, self.map_size[1] // 2))
         w, h = self.screen.get_size() 
         self.vision_base = utils.create_gradient("black", (1500, 1500), 400, opposite=True)
+        self.inventory = {
+            "wood" : 0,
+            "coal" : 0,
+            
+        }
         
         # Create the fog surface ONCE, not every frame
         self.fog = pygame.Surface((w, h), pygame.SRCALPHA)
@@ -64,6 +70,10 @@ class Froststep:
         
         # Trigger an initial scale setup
         self.scale_window(w, h)
+
+        #objects 
+        self.trees = []
+        self.create_map()
 
     def run(self):
         while True:
@@ -85,7 +95,7 @@ class Froststep:
 
             #update elements
             beacon_pos = (self.map_size[0] // 2, self.map_size[1] // 2)
-            self.player.update(100, 400, self.dt, self.map_size, beacon_pos, 200*self.scale['overall'])
+            self.player.update(100, self.dt, self.map_size, beacon_pos, 200*self.scale['overall'], self.tree_data, (offset_x, offset_y))
             self.update_world()
 
             #Handle events
@@ -159,6 +169,12 @@ class Froststep:
         self.time_left -= self.time_speed
         
     def draw_world(self, offset):
+
+
+        for tree in self.trees:
+            tree.draw(offset, self.hitbox_debug)
+
+
         w, h = self.screen.get_size()
         
         offset_x = (w // 2) - int(self.world_pos.x)
@@ -222,6 +238,27 @@ class Froststep:
             utils.draw_text(text=f"Player velocity: {self.player.velocity}, Velocity Length: {self.player.velocity.length_squared():.1f}", position=(int(10*self.scale['width']), int(30*self.scale['height'])), size=int(20*self.scale['overall']), color="#FFFFFF")
             utils.draw_text(text=f"Map pos: {self.world_pos}", position=(int(10*self.scale['width']), int(50*self.scale['height'])), size=int(20*self.scale['overall']), color="#FFFFFF")
             utils.draw_text(text=f"Warmth: {self.warmth:.2f}", position=(int(10*self.scale['width']), int(70*self.scale['height'])), size=int(20*self.scale['overall']), color="#FFFFFF")
+
+    def create_map(self, size = 100):
+        center_x, center_y = self.map_size[0] // 2, self.map_size[1] // 2
+        for i in range(self.map_size[0] // size):
+            for j in range(self.map_size[1] // size):
+                x, y = i * size, j * size
+                #MAKING SURE THERE IS DISTANCE BEWTTWEN THE BEACON AND THE TREE
+                if math.hypot(x - center_x, y - center_y) < 600:
+                    continue
+
+                chance = random.uniform(0, 1)
+                if chance < 0.05:
+                    self.trees.append(objects.Tree((x, y), 1, size))
+                elif chance < 0.1:
+                    self.trees.append(objects.Tree((x, y), 0, size))
+                else:
+                    continue
+
+        # Optimization: Pre-calculate tree collision data (x, y, w, h) for vectorization
+        self.tree_data = np.array([t.rect.topleft + t.rect.size for t in self.trees]) if self.trees else np.empty((0, 4))
+
 
 #Entry point of the game
 if __name__ == "__main__":
