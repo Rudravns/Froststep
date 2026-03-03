@@ -335,6 +335,9 @@ class Timer:
             self.start_time = pygame.time.get_ticks()
             self.stoped = False
 
+    def __str__(self):
+        return f"Time Left: {self.duration - ((pygame.time.get_ticks() - self.start_time) / 1000) * (self.speed / 100)}"
+
 
 def create_gradient(color: str, size: tuple[int, int], radius: int = None, opposite: bool = False, circular: bool = False):  # pyright: ignore[reportArgumentType]
     """

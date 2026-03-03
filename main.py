@@ -24,6 +24,7 @@ class Froststep:
         self.Master_debug_mode = True
         self.UI_debug_mode = True
         self.hitbox_debug = True
+        self.console_debug = True
 
         #world
         self.map_size = (5000, 5000)
@@ -79,6 +80,7 @@ class Froststep:
         while True:
             #Reset the game state here if needed
             self.dt = self.clock.tick(120) / 1000.0
+            if self.console_debug: os.system('cls' if os.name == 'nt' else "clear")
             self.screen.fill((0, 0, 0))
 
             # Calculate camera offset (Top-Left of map relative to screen). Use integers for drawing.
@@ -121,6 +123,8 @@ class Froststep:
                             self.UI_debug_mode = not self.UI_debug_mode
                         if event.key == pygame.K_F2:
                             self.hitbox_debug = not self.hitbox_debug
+                        if event.key == pygame.K_F3:
+                            self.console_debug = not self.console_debug
                         if event.key == pygame.K_1:
                             self.map_index = 0
                         if event.key == pygame.K_2:
@@ -165,15 +169,23 @@ class Froststep:
         self.world_pos.x = max(min_x, min(target_x, max_x))
         self.world_pos.y = max(min_y, min(target_y, max_y))
 
-        self.time_speed = self.dt * abs(round((abs(self.player.velocity.length_squared())/10)))
+        self.time_speed = self.dt * abs(round((abs(self.player.velocity.length_squared())*(self.warmth*0.1))))
         self.time_left -= self.time_speed
         
     def draw_world(self, offset):
 
 
-        for tree in self.trees:
+        for tree in self.trees[:]:
+            tree.update()
             tree.draw(offset, self.hitbox_debug)
 
+            if pygame.mouse.get_pressed()[0]:
+                
+                if self.player.fist_hitbox.colliderect(tree.get_rect(offset)):
+                    if tree.hit():
+                        self.trees.remove(tree)
+                        #Recacluate all the verts for the collition to happen
+                        self.tree_data = np.array([t.rect.topleft + t.rect.size for t in self.trees]) if self.trees else np.empty((0, 4))
 
         w, h = self.screen.get_size()
         

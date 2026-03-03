@@ -1,8 +1,6 @@
-from re import S
-
 import pygame
 import utilities as utils
-import math
+import math, random
 import numpy as np
 
 class player:
@@ -18,6 +16,7 @@ class player:
         
         #player rect and image handling
         self.rect = pygame.Rect(0, 0, self.size, self.size)
+        self.fist_hitbox = pygame.Rect(self.size, 0, self.size, self.size)
         self.image = utils.SpriteSheet()
         self.player_size = (self.size + 50, self.size + 50)
         self.image.extract_single_image("Player_imgs/idle.png",self.player_size )
@@ -201,7 +200,26 @@ class player:
         if debug:
             hitbox = pygame.Rect(0, 0, self.size * scale['overall'], self.size * scale['overall'])
             hitbox.center = (screen_x, screen_y)
+
+            #calculate new hand pos
+            self.fist_hitbox.width = 20 *  scale['overall'] ; self.fist_hitbox.height =  20 * scale['overall']
+            angle = math.radians(self.player_direction)
+
+            # fixed distance from center
+            radius = 40 * scale['overall']
+
+            offset_x = math.cos(angle) * radius
+            offset_y = math.sin(angle) * radius
+
+            self.fist_hitbox.center = (
+                screen_x + offset_x,
+                screen_y - offset_y
+            )
+          
+
+
             pygame.draw.rect(self.screen, (255, 0, 0), hitbox, 2)
+            pygame.draw.rect(self.screen, "green", self.fist_hitbox, 2)
     
     def circle_to_rect_collition(self, circle_pos, radius):
 
@@ -223,12 +241,20 @@ class Tree:
     def __init__(self, pos, tree_type, size):
         #init 
         self.images = utils.SpriteSheet()
-        self.images.extract_grid("Textures/Trees.png",(64,64), scale= (size,size))
-        self.image_index = tree_type
+        self.images.extract_grid("Textures/Simple_Tree.png", crop_size=(64,64), scale=(size,size))
+        self.images.extract_grid("Textures/Weird_Tree.png", crop_size=(64,64), scale=(size,size))
+        
+        self.ani_lenth = [6, 14]
+        self.tree_type = random.randint(1,2)
+        self.image_index = 0 if self.tree_type == 1 else self.ani_lenth[0]+1
         self.size = size
         self.pos = pygame.Vector2(pos)
         self.rect = pygame.Rect(self.pos.x, self.pos.y, self.size, self.size)
         self.screen = pygame.display.get_surface()
+        self.hit_timer = utils.Timer(0.5)
+        self.regen_timer = utils.Timer(3)
+        self.regen_timer.start()
+        self.hit_timer.reset(); self.hit_timer.start()
 
 
     def draw(self, offset, debug):
@@ -240,3 +266,27 @@ class Tree:
     def get_rect(self, offset):
         screen_pos = self.pos + pygame.Vector2(offset)
         return self.images.get_image(self.image_index).get_rect(topleft=screen_pos)
+    
+    def update(self):
+        if self.regen_timer.has_elapsed():
+            if  (self.image_index in range(1,5) or self.image_index in range(8,13)):
+                self.image_index -= 1
+                self.__reset_timer()
+               
+    
+    def hit(self):
+        print(self.regen_timer)
+       
+        if self.hit_timer.has_elapsed():
+            
+            if self.image_index in self.ani_lenth: return True
+            self.image_index += 1
+            print(self.image_index)
+            self.hit_timer.reset(); self.hit_timer.start()
+            self.__reset_timer()
+        return False
+
+
+    def __reset_timer(self):
+        self.regen_timer.reset()
+        self.regen_timer.start()
