@@ -242,9 +242,12 @@ class Tree:
         #init 
         self.images = utils.SpriteSheet()
         self.images.extract_grid("Textures/Simple_Tree.png", crop_size=(64,64), scale=(size,size))
+        self.images.remove(-1)
         self.images.extract_grid("Textures/Weird_Tree.png", crop_size=(64,64), scale=(size,size))
+        self.images.remove(-1)
         
-        self.ani_lenth = [6, 14]
+        
+        self.ani_lenth = [5, 13]
         self.tree_type = random.randint(1,2)
         self.image_index = 0 if self.tree_type == 1 else self.ani_lenth[0]+1
         self.size = size
@@ -286,6 +289,8 @@ class Tree:
             self.__reset_timer()
         return False
 
+    def resize(self, scale:dict):
+        self.images.rezize_images((scale['width'], scale['height']))
 
     def __reset_timer(self):
         self.regen_timer.reset()

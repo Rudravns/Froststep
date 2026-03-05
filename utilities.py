@@ -253,6 +253,12 @@ class SpriteSheet:
     @overload
     def rezize_images(self, size: Tuple[int, int], index: int) -> None: ...
 
+    @overload
+    def rezize_images(self, scale: float) -> None: ...
+
+    @overload
+    def rezize_images(self,scale: float, index: int) -> None: ...
+
    
 #   The actual implementation of the above functions. The index parameter is optional, if it is provided, only the image at that index will be rotated or resized, otherwise all images will be rotated or resized.
 
@@ -279,6 +285,9 @@ class SpriteSheet:
     # ---------------------------------------------------------
     def get_image(self, index: int) -> pygame.Surface:
         return self.images[index]
+    
+    def remove(self, index:int):
+        self.images.pop(index)
     
 
 # timer class

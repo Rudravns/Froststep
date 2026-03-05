@@ -68,19 +68,19 @@ class Froststep:
         self.time_left = 120 #<- in seconds
         self.time_speed = 100
         self.warmth = 1
-        
-        # Trigger an initial scale setup
-        self.scale_window(w, h)
 
         #objects 
         self.trees = []
         self.create_map()
 
+        # Trigger an initial scale setup
+        self.scale_window(w, h)
+
     def run(self):
         while True:
             #Reset the game state here if needed
             self.dt = self.clock.tick(120) / 1000.0
-            if self.console_debug: os.system('cls' if os.name == 'nt' else "clear")
+            #if self.console_debug: os.system('cls' if os.name == 'nt' else "clear")
             self.screen.fill((0, 0, 0))
 
             # Calculate camera offset (Top-Left of map relative to screen). Use integers for drawing.
@@ -108,6 +108,7 @@ class Froststep:
 
                 # Handle window resizing properly here, instead of every frame
                 if event.type == pygame.VIDEORESIZE:
+                    if self.console_debug: print(f"Reaized to { event.w, event.h}")
                     w, h = event.w, event.h
                     self.fog = pygame.Surface((w, h), pygame.SRCALPHA) # Recreate fog to fit new screen
                     self.scale_window(w, h)
@@ -234,7 +235,12 @@ class Froststep:
 
         # Pre-calculate integers for transforms
         self.beacon_light_resize = (int(2000 * self.scale['overall']), int(2000 * self.scale['overall']))
-        
+        for tree in self.trees:
+            tree.resize(self.scale)
+
+        #if needed but only uses the pos right?
+        #self.tree_data = np.array([t.rect.topleft + t.rect.size for t in self.trees]) if self.trees else np.empty((0, 4)) #remake the vector
+ 
         if self.screen.get_size() != self.full_screen_size: 
             self.last_screen_size = (w, h)
 
