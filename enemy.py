@@ -5,8 +5,8 @@ import math
 import random
 import utilities as utils
 
-class Enemy:
-    def __init__(self, start_pos, size=40):
+class Spider:
+    def __init__(self, start_pos, size=50):
         self.screen = pygame.display.get_surface()
         self.world_pos = pygame.Vector2(start_pos)
         self.velocity = pygame.Vector2(0, 0)
@@ -19,11 +19,13 @@ class Enemy:
         
         # Visuals
         self.images = utils.SpriteSheet()
-        self.enemy_size = (self.size + 40, self.size + 40)
+        self.enemy_size = (self.size + 50, self.size + 50)
         # Assuming you have an enemy sheet or reuse player logic
-        self.images.extract_single_image("Enemy_imgs/Spider/idle.png", self.enemy_size)
+        self.images.extract_grid("Enemy_imgs/Spider/moving(1).png", crop_size=(60,60),scale=self.enemy_size) # do not need idle as it is the first image in moving
         self.image_index = 0
-        
+        self.animation_timer = utils.Timer(.0625)
+        self.animation_timer.start()
+
         # Behavior States
         self.state = "WANDER" # WANDER, CHASE, ATTACK
         self.detection_radius = 300
@@ -57,6 +59,7 @@ class Enemy:
         if self.state == "CHASE":
             if dist_to_player > 0:
                 move_vec = (player_world_pos - self.world_pos).normalize()
+                
         
         elif self.state == "WANDER":
             # Only update the timer based on the world's time_speed
@@ -91,6 +94,12 @@ class Enemy:
         # Movement X
         self.world_pos.x += self.velocity.x
         self.rect.centerx = int(self.world_pos.x)
+
+        if self.animation_timer.has_elapsed(): 
+            self.image_index = (self.image_index + 1) % self.images.images.__len__()
+            if round(self.velocity.length()) == 0: self.image_index = 0
+            self.animation_timer.restart()
+
         if tree_rects:
             for tree in tree_rects:
                 if self.rect.colliderect(tree):
@@ -139,3 +148,9 @@ class Enemy:
             debug_rect = self.rect.copy()
             debug_rect.center = (int(screen_pos.x), int(screen_pos.y))
             pygame.draw.rect(self.screen, (255, 0, 0), debug_rect, 2)
+
+    def resize(self, new_size):
+        self.images.rezize_images(new_size)
+
+    def __str__(self):
+        return "Spider"

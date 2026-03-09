@@ -70,6 +70,7 @@ def draw_text(
         italic: bool = False,
         underline: bool = False,
         draw: bool = True,
+        centered: bool = False,
         surface: Optional[pygame.Surface] = None
 ) -> Tuple[pygame.Surface, pygame.Rect]:
     """Render text to the active display surface."""
@@ -100,8 +101,8 @@ def draw_text(
 
     # Render text
     text_surface = font.render(str(text), True, color) # pyright: ignore[reportOptionalMemberAccess]
-    text_rect = text_surface.get_rect(topleft=scale(position))
-
+    text_rect = text_surface.get_rect(topleft=scale(position)) if not centered else text_surface.get_rect(center=scale(position))
+    
     if draw:
         screen.blit(text_surface, text_rect)
 
@@ -337,6 +338,10 @@ class Timer:
         if self.start_time is None and not self.stoped: # if it is paused
             self.start_time = pygame.time.get_ticks()
             self.stoped = False
+
+    def restart(self):
+        self.reset() 
+        self.start()
 
     def __str__(self):
         return f"Time Left: {self.duration - ((pygame.time.get_ticks() - self.start_time) / 1000) * (self.speed / 100)}" # pyright: ignore[reportOperatorIssue]
