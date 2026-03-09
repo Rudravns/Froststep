@@ -1,6 +1,6 @@
 import pygame
 import sys, os, math, random
-import numpy as np
+from enemy import *
 import utilities as utils
 import objects
 
@@ -37,7 +37,9 @@ class Froststep:
         #screen elements/objects
         
         #beacon 
-        self.beacon_img = None
+        self.beacon_img = utils.SpriteSheet()
+        self.beacon_img.extract_grid("Textures\\Beacon.png", crop_size=(64,64), scale=(400,400))
+        self.beacon_img_index = 0
         self.beacon_cap = 10
         self.beacon_storage = 0
         
@@ -48,15 +50,18 @@ class Froststep:
         self.last_scale_overall = -1 # Used to check if we need to rescale the light
 
         #player
-        self.player = objects.player((self.map_size[0] // 3, self.map_size[1] // 2))
+        self.player = objects.Player((self.map_size[0] // 3, self.map_size[1] // 2))
         w, h = self.screen.get_size() 
         self.vision_base = utils.create_gradient("black", (1500, 1500), 400, opposite=True)
         self.inventory = {
             "wood" : 0,
             "coal" : 0,
-            
         }
         
+        #enemys
+        self.enemies = [Enemy((500, 500))]
+
+
         # Create the fog surface ONCE, not every frame
         self.fog = pygame.Surface((w, h), pygame.SRCALPHA)
         
@@ -71,6 +76,7 @@ class Froststep:
 
         #objects 
         self.trees = []
+        self.tree_rects = [] # Optimized list for Pygame C-level collisions
         self.create_map()
 
         # Trigger an initial scale setup
@@ -80,15 +86,26 @@ class Froststep:
         while True:
             #Reset the game state here if needed
             self.dt = self.clock.tick(120) / 1000.0
-            #if self.console_debug: os.system('cls' if os.name == 'nt' else "clear")
             self.screen.fill((0, 0, 0))
 
             # Calculate camera offset (Top-Left of map relative to screen). Use integers for drawing.
             offset_x = (self.screen.get_width() // 2) - int(self.world_pos.x)
             offset_y = (self.screen.get_height() // 2) - int(self.world_pos.y)
 
-            #draw map
-            self.screen.blit(self.map.get_image(self.map_index), (offset_x, offset_y))
+            # OPTIMIZATION: Subsurface Map Blitting. 
+            # Only extracts and blits the visible portion of the 5000x5000 map.
+            w, h = self.screen.get_size()
+            view_rect = pygame.Rect(-offset_x, -offset_y, w, h)
+            map_image = self.map.get_image(self.map_index)
+            view_rect.clamp_ip(map_image.get_rect()) # Ensure we don't look outside the map
+            self.screen.blit(map_image, (0, 0), area=view_rect)
+
+            #update enemy first
+            time_speed = 0.1 #self.dt * abs(round((abs(self.player.velocity.length_squared())*(self.warmth*0.1))))
+            for enemy in self.enemies:
+                enemy.update(self.dt, self.player.world_pos, time_speed, self.map_size, [t.rect for t in self.trees])
+                enemy.draw((offset_x, offset_y), self.hitbox_debug)
+
 
             #draw UI elements here
             self.player.draw(self.hitbox_debug, (offset_x, offset_y), self.scale)
@@ -97,7 +114,7 @@ class Froststep:
 
             #update elements
             beacon_pos = (self.map_size[0] // 2, self.map_size[1] // 2)
-            self.player.update(100, self.dt, self.map_size, beacon_pos, 200*self.scale['overall'], self.tree_data, (offset_x, offset_y))
+            self.player.update(100, self.dt, self.map_size, beacon_pos, 200*self.scale['overall'], self.tree_rects, (offset_x, offset_y))
             self.update_world()
 
             #Handle events
@@ -108,7 +125,7 @@ class Froststep:
 
                 # Handle window resizing properly here, instead of every frame
                 if event.type == pygame.VIDEORESIZE:
-                    if self.console_debug: print(f"Reaized to { event.w, event.h}")
+                    if self.console_debug: print(f"Resized to {event.w, event.h}")
                     w, h = event.w, event.h
                     self.fog = pygame.Surface((w, h), pygame.SRCALPHA) # Recreate fog to fit new screen
                     self.scale_window(w, h)
@@ -174,24 +191,26 @@ class Froststep:
         self.time_left -= self.time_speed
         
     def draw_world(self, offset):
+        w, h = self.screen.get_size()
+        offset_x, offset_y = offset
+        
+        # OPTIMIZATION: Camera Culling. Only draw and update trees that are within the screen!
+        camera_rect = pygame.Rect(-offset_x, -offset_y, w, h)
+        camera_rect.inflate_ip(200, 200) # Expand slightly so trees don't pop in abruptly at the edges
 
+        mouse_pressed = pygame.mouse.get_pressed()[0] # Call ONCE per frame
 
         for tree in self.trees[:]:
-            tree.update()
-            tree.draw(offset, self.hitbox_debug)
+            if camera_rect.colliderect(tree.rect):
+                tree.update()
+                tree.draw(offset, self.hitbox_debug)
 
-            if pygame.mouse.get_pressed()[0]:
-                
-                if self.player.fist_hitbox.colliderect(tree.get_rect(offset)):
-                    if tree.hit():
-                        self.trees.remove(tree)
-                        #Recacluate all the verts for the collition to happen
-                        self.tree_data = np.array([t.rect.topleft + t.rect.size for t in self.trees]) if self.trees else np.empty((0, 4))
+                if mouse_pressed:
+                    if self.player.fist_hitbox.colliderect(tree.get_rect(offset)):
+                        if tree.hit():
+                            self.trees.remove(tree)
+                            self.update_tree_data()
 
-        w, h = self.screen.get_size()
-        
-        offset_x = (w // 2) - int(self.world_pos.x)
-        offset_y = (h // 2) - int(self.world_pos.y)
         beacon_pos = ((self.map_size[0] // 2) + offset_x, (self.map_size[1] // 2) + offset_y)
         radius = 200 
         
@@ -222,9 +241,12 @@ class Froststep:
         beacon_rect = self.cached_beacon_light.get_rect(center=beacon_pos)
         self.screen.blit(self.cached_beacon_light, beacon_rect.topleft)
 
-        if self.hitbox_debug:
-            pygame.draw.circle(self.screen, (255, 0, 0), beacon_pos, int(radius * self.scale['overall']))
+        rsize =  int(radius * self.scale['overall'])
+        self.screen.blit(self.beacon_img.get_image(self.beacon_img_index), (beacon_pos[0] - rsize, beacon_pos[1] - rsize))
 
+
+        if self.hitbox_debug:
+            pygame.draw.circle(self.screen, (255, 0, 0), beacon_pos, int(radius * self.scale['overall']),3)
     #=====================================================
     # Window elements
     #=====================================================
@@ -235,11 +257,11 @@ class Froststep:
 
         # Pre-calculate integers for transforms
         self.beacon_light_resize = (int(2000 * self.scale['overall']), int(2000 * self.scale['overall']))
+        self.beacon_img.rezize_images((400*self.scale['overall'], 400*self.scale['overall']))
         for tree in self.trees:
             tree.resize(self.scale)
 
-        #if needed but only uses the pos right?
-        #self.tree_data = np.array([t.rect.topleft + t.rect.size for t in self.trees]) if self.trees else np.empty((0, 4)) #remake the vector
+        self.update_tree_data()
  
         if self.screen.get_size() != self.full_screen_size: 
             self.last_screen_size = (w, h)
@@ -257,11 +279,11 @@ class Froststep:
             utils.draw_text(text=f"Map pos: {self.world_pos}", position=(int(10*self.scale['width']), int(50*self.scale['height'])), size=int(20*self.scale['overall']), color="#FFFFFF")
             utils.draw_text(text=f"Warmth: {self.warmth:.2f}", position=(int(10*self.scale['width']), int(70*self.scale['height'])), size=int(20*self.scale['overall']), color="#FFFFFF")
 
-    def create_map(self, size = 100):
+    def create_map(self, size=100):
         center_x, center_y = self.map_size[0] // 2, self.map_size[1] // 2
         for i in range(self.map_size[0] // size):
             for j in range(self.map_size[1] // size):
-                x, y = i * size, j * size
+                x, y = (i * size) + (size // 2), (j * size) + (size // 2)
                 #MAKING SURE THERE IS DISTANCE BEWTTWEN THE BEACON AND THE TREE
                 if math.hypot(x - center_x, y - center_y) < 600:
                     continue
@@ -271,14 +293,15 @@ class Froststep:
                     self.trees.append(objects.Tree((x, y), 1, size))
                 elif chance < 0.1:
                     self.trees.append(objects.Tree((x, y), 0, size))
-                else:
-                    continue
 
-        # Optimization: Pre-calculate tree collision data (x, y, w, h) for vectorization
-        self.tree_data = np.array([t.rect.topleft + t.rect.size for t in self.trees]) if self.trees else np.empty((0, 4))
+        self.update_tree_data()
 
+    def update_tree_data(self):
+        # OPTIMIZATION: Simple native Pygame Rect list. 
+        # Collisions are checked in heavily optimized native C code via Pygame instead of NumPy.
+        self.tree_rects = [t.rect for t in self.trees]
 
 #Entry point of the game
 if __name__ == "__main__":
-    game = Froststep()
+    game = Froststep() 
     game.run()

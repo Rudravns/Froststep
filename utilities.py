@@ -55,7 +55,7 @@ def scale(
 
     raise TypeError("Value must be an int, float, or tuple of int/float.")
 
-    
+
 # =====================================================
 # Text rendering
 # =====================================================
@@ -253,22 +253,16 @@ class SpriteSheet:
     @overload
     def rezize_images(self, size: Tuple[int, int], index: int) -> None: ...
 
-    @overload
-    def rezize_images(self, scale: float) -> None: ...
-
-    @overload
-    def rezize_images(self,scale: float, index: int) -> None: ...
-
    
 #   The actual implementation of the above functions. The index parameter is optional, if it is provided, only the image at that index will be rotated or resized, otherwise all images will be rotated or resized.
 
     def rezize_images(self, size: Tuple[int, int], index: Optional[int] = None) -> None:
         if index is not None:
-            self.images[index] = pygame.transform.scale(self.images[index], size)
+            self.images[index] = pygame.transform.scale(self.original_image[index], size)
             return
         else:
             for i in range(len(self.images)):
-                self.images[i] = pygame.transform.scale(self.images[i], size)
+                self.images[i] = pygame.transform.scale(self.original_image[i], size)
             return
 
     def rotate_images(self, angle: int, index: int | None = None) -> None:
@@ -345,7 +339,7 @@ class Timer:
             self.stoped = False
 
     def __str__(self):
-        return f"Time Left: {self.duration - ((pygame.time.get_ticks() - self.start_time) / 1000) * (self.speed / 100)}"
+        return f"Time Left: {self.duration - ((pygame.time.get_ticks() - self.start_time) / 1000) * (self.speed / 100)}" # pyright: ignore[reportOperatorIssue]
 
 
 def create_gradient(color: str, size: tuple[int, int], radius: int = None, opposite: bool = False, circular: bool = False):  # pyright: ignore[reportArgumentType]
