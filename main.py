@@ -2,7 +2,7 @@ import pygame
 import sys, os, math, random
 from enemy import *
 import utilities as utils
-import objects
+import objects, player
 
 class Froststep:
     def __init__(self):
@@ -50,17 +50,23 @@ class Froststep:
         self.last_scale_overall = -1 # Used to check if we need to rescale the light
 
         #player
-        self.player = objects.Player((self.map_size[0] // 3, self.map_size[1] // 2))
+        self.player = player.Player((self.map_size[0] // 3, self.map_size[1] // 2))
         w, h = self.screen.get_size() 
         self.vision_base = utils.create_gradient("black", (1500, 1500), 400, opposite=True)
         self.inventory = {
             "wood" : 2,
-            "coal" : 4,
-            "Membrane": 5
         }
+        """
+        current items avalible:
+        wood
+        """
+
+        #items
         self.items_tex = utils.SpriteSheet()
         self.items_tex.extract_single_image("items/twig.png", (60,60))
         self.slot = 1
+        self.items = objects.Items(50) #droped items class NOT the slot UI items
+        #self.items.add_item("stick", (500,500), 0)#test item
         
         #enemys
         self.enemies = [Spider((500, 500))]
@@ -113,15 +119,16 @@ class Froststep:
 
             #draw UI elements here
             self.player.draw(self.hitbox_debug, (offset_x, offset_y), self.scale)
+            self.items.draw((offset_x, offset_y), self.hitbox_debug)
             self.draw_world((offset_x, offset_y))
-            self.draw_ui()
+            self.draw_ui(pygame.Vector2((offset_x, offset_y)))
 
             #update elements
             beacon_pos = (self.map_size[0] // 2, self.map_size[1] // 2)
             self.player.update(100, self.dt, self.map_size, beacon_pos, 200*self.scale['overall'], self.tree_rects, (offset_x, offset_y))
             self.update_world()
             self.draw_inv()
-
+            
             #Handle events
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -157,6 +164,24 @@ class Froststep:
                         if event.key == pygame.K_l:
                             self.warmth += 0.1
 
+                        if event.key == pygame.K_q:
+                            inv_items = list(self.inventory.items())
+                            # Check if the currently selected slot actually has an item
+                            if self.slot - 1 < len(inv_items):
+                                item_name = inv_items[self.slot - 1][0]
+                                
+                                # Decrease count
+                                self.inventory[item_name] -= 1
+
+                                match item_name:
+                                    case "wood": self.items.add_item("twig", self.world_pos, 0)
+                                    case _: pass
+                                
+                                # Remove from dictionary if count hits zero
+                                if self.inventory[item_name] <= 0:
+                                    del self.inventory[item_name]
+
+
                     if event.key == pygame.K_F11:
                         if self.screen.get_size() == self.full_screen_size:
                             w, h = self.last_screen_size
@@ -169,14 +194,14 @@ class Froststep:
                         # Apply new settings
                         self.fog = pygame.Surface((w, h), pygame.SRCALPHA)
                         self.scale_window(w, h)
+                    
+                elif event.type == pygame.MOUSEWHEEL:
+                    current_index = self.slot - 1
+                    new_index = (current_index + event.y) % 3
+                    self.slot = new_index + 1
 
-                    elif event.type == pygame.MOUSEWHEEL:
-                        if event.y > 0:
-                            self.slot = (self.slot + 1) % 3
-                        elif event.y < 0:
-                            self.slot = (self.slot - 1) % 3
-                       
-                        
+            
+
             #Update game state here
             pygame.display.flip()
 
@@ -277,13 +302,14 @@ class Froststep:
             enemy.resize((100*self.scale['overall'], 100*self.scale['overall']))
 
         self.items_tex.rezize_images((60 *self.scale['overall'],  60 *self.scale['overall']))
+        self.items.resize(self.scale)
 
         self.update_tree_data()
  
         if self.screen.get_size() != self.full_screen_size: 
             self.last_screen_size = (w, h)
 
-    def draw_ui(self):
+    def draw_ui(self, offset):
         #Draw UI elements here
         w, h = self.screen.get_size()
 
@@ -291,57 +317,62 @@ class Froststep:
         utils.draw_text(text=f"Time Left: {round(self.time_left, 1)}s", position=time_left_pos, size=40, color="#FFFFFF", centered=True)
 
         if self.UI_debug_mode:
+
             utils.draw_text(text=f"Fps:{round(self.clock.get_fps())}", position=(int(10*self.scale['width']), int(10*self.scale['height'])), size=int(20*self.scale['overall']), color="#FFFFFF")
             utils.draw_text(text=f"Player velocity: {self.player.velocity}, Velocity Length: {self.player.velocity.length_squared():.1f}", position=(int(10*self.scale['width']), int(30*self.scale['height'])), size=int(20*self.scale['overall']), color="#FFFFFF")
             utils.draw_text(text=f"Map pos: {self.world_pos}", position=(int(10*self.scale['width']), int(50*self.scale['height'])), size=int(20*self.scale['overall']), color="#FFFFFF")
             utils.draw_text(text=f"Warmth: {self.warmth:.2f}", position=(int(10*self.scale['width']), int(70*self.scale['height'])), size=int(20*self.scale['overall']), color="#FFFFFF")
-
+            utils.draw_text(text=f"Mouse World Pos: {pygame.Vector2(pygame.mouse.get_pos())-offset}", position=(int(10*self.scale['width']), int(90*self.scale['height'])), size=int(20*self.scale['overall']), color="#FFFFFF")
+    
     def draw_inv(self):
         slots = 3
-        slot_size = 60 *self.scale['overall']
+        slot_size = 60 * self.scale['overall']
         padding = 10 * self.scale['overall']
-        # Total width of all slots + gaps
         total_width = (slot_size * slots) + (padding * (slots - 1))
         
-        # Get screen reference
         screen = pygame.display.get_surface()
         screen_rect = screen.get_rect()
 
-        #get inventory items
+        # Get inventory items as a list of tuples: [("wood", 2), ("coal", 4)]
         inven_items = list(self.inventory.items())
-        #print(inven_items)
 
         for i in range(slots):
-            # 1. Create a surface with per-pixel alpha (transparency)
-            slot_surf = pygame.Surface((slot_size, slot_size), pygame.SRCALPHA)
-            
-            # 2. Fill with white and light transparency (e.g., alpha=100 out of 255)
-            # Format: (Red, Green, Blue, Alpha)
-            slot_surf.fill((255, 255, 255, 100)) 
-            
-            # 3. Calculate horizontal position to center the whole bar
+            # 1. Calculate horizontal position to center the whole bar
             start_x = screen_rect.centerx - (total_width // 2)
             x_pos = start_x + (i * (slot_size + padding))
-            
-            # 4. Position at the bottom (with a small offset from the edge)
             y_pos = screen_rect.bottom - slot_size - 20
             
-            # 5. Blit the transparent slot onto the screen
+            # 2. Draw the background slot box (Always draw this!)
+            slot_surf = pygame.Surface((slot_size, slot_size), pygame.SRCALPHA)
+            slot_surf.fill((255, 255, 255, 100)) 
             screen.blit(slot_surf, (x_pos, y_pos))
 
-            #6. Draw tex
-            match inven_items[i][0]:
+            # 3. Draw Selected slot highlight (Always check this!)
+            if self.slot - 1 == i: 
+                pygame.draw.rect(self.screen, "Red", (x_pos, y_pos, slot_size, slot_size), 4)
 
-                case "wood": self.screen.blit(self.items_tex.get_image(0), (x_pos, y_pos))
+            # 4. Only draw item details if this index exists in our inventory list
+            if i < len(inven_items):
+                item_name = inven_items[i][0]
+                item_amt = inven_items[i][1]
 
-                case _:
-                    pass
-            
-            #7. Selected slot?
-            if self.slot - 1 == i: pygame.draw.rect(self.screen, "Red", (x_pos, y_pos, slot_size, slot_size), 4)
-
-            #8. Draw amt
-            utils.draw_text(text=inven_items[i][1], position= (x_pos, y_pos), size=int(20*self.scale['overall']), color="#FFFFFF")
+                # Draw the specific item texture
+                match item_name:
+                    case "wood": 
+                        self.screen.blit(self.items_tex.get_image(0), (x_pos, y_pos))
+                    case "coal":
+                        # Assuming coal is index 1 in your sprite sheet
+                        self.screen.blit(self.items_tex.get_image(1), (x_pos, y_pos))
+                    case _:
+                        pass
+                
+                # Draw the amount text
+                utils.draw_text(
+                    text=str(item_amt), 
+                    position=(x_pos + 5, y_pos + 5), 
+                    size=int(20 * self.scale['overall']), 
+                    color="#FFFFFF"
+                )
 
 
     def create_map(self, size=100):
