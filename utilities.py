@@ -456,3 +456,5 @@ class VectorizedRects:
         obottom = oy + oh
         return (self.left < oright) & (self.right > ox) & \
                (self.top < obottom) & (self.bottom > oy)
+    
+
