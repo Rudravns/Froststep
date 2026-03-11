@@ -176,3 +176,12 @@ class Player:
         circle_center = pygame.Vector2(circle_pos)
         self.collide_beacon = circle_center.distance_to(closest_point) < radius
         return self.collide_beacon
+    
+    def get_rect(self, offset, scale):
+        screen_x = self.world_pos.x + offset[0]
+        screen_y = self.world_pos.y + offset[1]
+
+        hitbox = pygame.Rect(0, 0, self.size * scale['overall'], self.size * scale['overall'])
+        hitbox.center = (screen_x, screen_y)
+
+        return hitbox

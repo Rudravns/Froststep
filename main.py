@@ -63,10 +63,12 @@ class Froststep:
 
         #items
         self.items_tex = utils.SpriteSheet()
-        self.items_tex.extract_single_image("items/twig.png", (60,60))
+        self.items_tex.extract_single_image("items/twig.png", (40,40))
         self.slot = 1
         self.items = objects.Items(50) #droped items class NOT the slot UI items
         #self.items.add_item("stick", (500,500), 0)#test item
+        self.pickup_timer = utils.Timer(0.3)
+        self.pickup_timer.start()
         
         #enemys
         self.enemies = [Spider((500, 500))]
@@ -95,7 +97,7 @@ class Froststep:
     def run(self):
         while True:
             #Reset the game state here if needed
-            self.dt = self.clock.tick(60) / 1000.0
+            self.dt = self.clock.tick(0) / 1000.0
             self.screen.fill((0, 0, 0))
 
             # Calculate camera offset (Top-Left of map relative to screen). Use integers for drawing.
@@ -129,6 +131,26 @@ class Froststep:
             self.update_world()
             self.draw_inv()
             
+            # --- THE FIX ---
+            # check if the itms could be picked up or not
+            player_rect = self.player.get_rect((offset_x, offset_y), self.scale)
+            
+            # Convert screen-space rect back to world-space before checking collisions!
+            world_player_rect = player_rect.copy()
+            world_player_rect.x -= offset_x
+            world_player_rect.y -= offset_y
+            
+            if self.hitbox_debug:
+                pygame.draw.rect(self.screen, "green", player_rect, 2)
+            
+            checked_itms = self.items.check_can_remove(world_player_rect)
+            
+            # If the list is not empty, you can now process the pickups!
+            if checked_itms:
+                if self.console_debug: print(f"Standing on items at indices: {checked_itms}")
+                # Example of removing the first item you touch:
+                # self.items.remove_item(checked_itms[0])
+
             #Handle events
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -163,6 +185,10 @@ class Froststep:
                             self.warmth -= 0.1
                         if event.key == pygame.K_l:
                             self.warmth += 0.1
+
+                        if event.key == pygame.K_e and checked_itms:
+                            match self.items.names[checked_itms[0]]:
+                                case "twig" if self.add("wood", 1): self.items.remove_item(checked_itms[0]) 
 
                         if event.key == pygame.K_q:
                             inv_items = list(self.inventory.items())
@@ -205,6 +231,89 @@ class Froststep:
             #Update game state here
             pygame.display.flip()
 
+    #====================================================
+    # inventory
+    #====================================================
+    def add(self, item, amt):
+
+        #1. if timer has not passed exit
+        if not self.pickup_timer.has_elapsed():
+            return False
+        
+        #2. if timer PASSED then reset and procceed
+        self.pickup_timer.restart()
+        
+        #3. assign vars
+        items = list(self.inventory.items())
+        slots = 3
+
+        #4. create the list loop checking if item exist or not
+        for stored, stored_amt in items:
+
+            #5. If exist add and close this func
+            if stored == item:
+                self.inventory[stored] += amt
+                return True #marks stored
+        
+        #6. create a new slot for this if the lenth is <= max slots
+        if len(items) < slots:
+            self.inventory[item] = amt
+            return True
+        
+        #7. Doesn't exist and cannot be added to inv so just say can't add
+        return False
+
+    def draw_inv(self):
+        slots = 3
+        slot_size = 60 * self.scale['overall']
+        padding = 10 * self.scale['overall']
+        total_width = (slot_size * slots) + (padding * (slots - 1))
+        
+        screen = pygame.display.get_surface()
+        screen_rect = screen.get_rect()
+
+        # Get inventory items as a list of tuples: [("wood", 2), ("coal", 4)]
+        inven_items = list(self.inventory.items())
+
+        for i in range(slots):
+            # 1. Calculate horizontal position to center the whole bar
+            start_x = screen_rect.centerx - (total_width // 2)
+            x_pos = start_x + (i * (slot_size + padding))
+            y_pos = screen_rect.bottom - slot_size - 20
+            
+            # 2. Draw the background slot box (Always draw this!)
+            slot_surf = pygame.Surface((slot_size, slot_size), pygame.SRCALPHA)
+            slot_surf.fill((255, 255, 255, 100)) 
+            screen.blit(slot_surf, (x_pos, y_pos))
+
+            # 3. Draw Selected slot highlight (Always check this!)
+            if self.slot - 1 == i: 
+                pygame.draw.rect(self.screen, "Red", (x_pos, y_pos, slot_size, slot_size), 4)
+
+            # 4. Only draw item details if this index exists in our inventory list
+            if i < len(inven_items):
+                item_name = inven_items[i][0]
+                item_amt = inven_items[i][1]
+
+                # Draw the specific item texture
+                match item_name:
+                    case "wood": 
+                        self.screen.blit(self.items_tex.get_image(0), (x_pos, y_pos))
+                    case "coal":
+                        # Assuming coal is index 1 in your sprite sheet
+                        self.screen.blit(self.items_tex.get_image(1), (x_pos, y_pos))
+                    case _:
+                        pass
+                
+                # Draw the amount text
+                utils.draw_text(
+                    text=str(item_amt), 
+                    position=(x_pos + 5, y_pos + 5), 
+                    size=int(20 * self.scale['overall']), 
+                    color="#FFFFFF"
+                )
+
+
     #=====================================================
     # World
     #=====================================================
@@ -245,6 +354,7 @@ class Froststep:
                 if mouse_pressed:
                     if self.player.fist_hitbox.colliderect(tree.get_rect(offset)):
                         if tree.hit():
+                            self.items.add_item("twig", tree.pos, 0)
                             self.trees.remove(tree)
                             self.update_tree_data()
 
@@ -324,57 +434,7 @@ class Froststep:
             utils.draw_text(text=f"Warmth: {self.warmth:.2f}", position=(int(10*self.scale['width']), int(70*self.scale['height'])), size=int(20*self.scale['overall']), color="#FFFFFF")
             utils.draw_text(text=f"Mouse World Pos: {pygame.Vector2(pygame.mouse.get_pos())-offset}", position=(int(10*self.scale['width']), int(90*self.scale['height'])), size=int(20*self.scale['overall']), color="#FFFFFF")
     
-    def draw_inv(self):
-        slots = 3
-        slot_size = 60 * self.scale['overall']
-        padding = 10 * self.scale['overall']
-        total_width = (slot_size * slots) + (padding * (slots - 1))
-        
-        screen = pygame.display.get_surface()
-        screen_rect = screen.get_rect()
-
-        # Get inventory items as a list of tuples: [("wood", 2), ("coal", 4)]
-        inven_items = list(self.inventory.items())
-
-        for i in range(slots):
-            # 1. Calculate horizontal position to center the whole bar
-            start_x = screen_rect.centerx - (total_width // 2)
-            x_pos = start_x + (i * (slot_size + padding))
-            y_pos = screen_rect.bottom - slot_size - 20
-            
-            # 2. Draw the background slot box (Always draw this!)
-            slot_surf = pygame.Surface((slot_size, slot_size), pygame.SRCALPHA)
-            slot_surf.fill((255, 255, 255, 100)) 
-            screen.blit(slot_surf, (x_pos, y_pos))
-
-            # 3. Draw Selected slot highlight (Always check this!)
-            if self.slot - 1 == i: 
-                pygame.draw.rect(self.screen, "Red", (x_pos, y_pos, slot_size, slot_size), 4)
-
-            # 4. Only draw item details if this index exists in our inventory list
-            if i < len(inven_items):
-                item_name = inven_items[i][0]
-                item_amt = inven_items[i][1]
-
-                # Draw the specific item texture
-                match item_name:
-                    case "wood": 
-                        self.screen.blit(self.items_tex.get_image(0), (x_pos, y_pos))
-                    case "coal":
-                        # Assuming coal is index 1 in your sprite sheet
-                        self.screen.blit(self.items_tex.get_image(1), (x_pos, y_pos))
-                    case _:
-                        pass
-                
-                # Draw the amount text
-                utils.draw_text(
-                    text=str(item_amt), 
-                    position=(x_pos + 5, y_pos + 5), 
-                    size=int(20 * self.scale['overall']), 
-                    color="#FFFFFF"
-                )
-
-
+    
     def create_map(self, size=100):
         center_x, center_y = self.map_size[0] // 2, self.map_size[1] // 2
         for i in range(self.map_size[0] // size):

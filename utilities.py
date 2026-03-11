@@ -290,9 +290,9 @@ class SpriteSheet:
 class Timer:
     def __init__(self, duration: float, speed: int = 100):
         """
-        This class measures duration in ms and will tell you how much time is left.
+        This class measures duration in seconds and will tell you how much time is left.
 
-        :duration: in miliseconds
+        :duration: in seconds
         """
         self.duration = duration
         self.start_time = None
@@ -400,3 +400,59 @@ def create_gradient(color: str, size: tuple[int, int], radius: int = None, oppos
     del alpha_array
 
     return gradient
+
+
+class VectorizedRects:
+    """
+    A NumPy-backed class to handle thousands of Pygame Rects simultaneously.
+    Stores rects as an (N, 4) float/int array: [x, y, width, height].
+    """
+    def __init__(self, rect_data):
+        self.data = np.array(rect_data, dtype=np.float32)
+
+    @classmethod
+    def from_pygame_rects(cls, rect_list):
+        data = [[r.x, r.y, r.w, r.h] for r in rect_list]
+        return cls(data)
+
+    @property
+    def x(self): return self.data[:, 0]
+    @x.setter
+    def x(self, val): self.data[:, 0] = val
+
+    @property
+    def y(self): return self.data[:, 1]
+    @y.setter
+    def y(self, val): self.data[:, 1] = val
+
+    @property
+    def w(self): return self.data[:, 2]
+    @property
+    def h(self): return self.data[:, 3]
+    @property
+    def left(self): return self.x
+    @property
+    def right(self): return self.x + self.w
+    @property
+    def top(self): return self.y
+    @property
+    def bottom(self): return self.y + self.h
+
+    def move_ip(self, dx, dy):
+        self.data[:, 0] += dx
+        self.data[:, 1] += dy
+
+    def collidepoint(self, px, py):
+        return (self.x <= px) & (px < self.right) & \
+               (self.y <= py) & (py < self.bottom)
+
+    def colliderect(self, other_rect):
+        if isinstance(other_rect, pygame.Rect):
+            ox, oy, ow, oh = other_rect.x, other_rect.y, other_rect.w, other_rect.h
+        else:
+            ox, oy, ow, oh = other_rect
+
+        oright = ox + ow
+        obottom = oy + oh
+        return (self.left < oright) & (self.right > ox) & \
+               (self.top < obottom) & (self.bottom > oy)
