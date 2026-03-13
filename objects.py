@@ -87,6 +87,7 @@ class Items:
         self.item_texs = utils.SpriteSheet()
         self.item_texs.extract_single_image("items/twig.png", (size,size))
         self.item_texs.extract_single_image("items/membrane.png", (size,size))
+        self.item_texs.extract_single_image("items/apple.png", (size, size))
         self.size = size
         self.screen = pygame.display.get_surface()
 

@@ -4,7 +4,7 @@ from enemy import *
 import utilities as utils
 import objects, player, ui
 from Beacon import Beacon
-
+import Sound
 
 class Froststep:
     def __init__(self):
@@ -51,18 +51,20 @@ class Froststep:
         self.inventory = {
             "membrane" : 4,
             "wood" : 4,
-        }
+            "apple" : 4.
+        } if self.Master_debug_mode else {}
         """
         current items avalible:
         wood
         membrane
-
+        apple
         """
 
         #items
         self.items_tex = utils.SpriteSheet()
         self.items_tex.extract_single_image("items/twig.png", (60,60))
         self.items_tex.extract_single_image("items/membrane.png", (60,60))
+        self.items_tex.extract_single_image("items/apple.png", (60,60))
         self.slot = 1
         self.items = objects.Items(50) #droped items class NOT the slot UI items
         #self.items.add_item("stick", (500,500), 0)#test item
@@ -102,7 +104,19 @@ class Froststep:
         #Menu Items
         self.menu_buttons = [utils.Button(pos = (w/2,h/2), size = (200,100), text= "start", center=True)]
         
+        #sound stuff
+        self.sound = Sound.SoundManager()
+        self.sound.load_sfx("Hit", "hitHurt.wav")
+        self.sound.load_sfx("Tree Broken", "Tree_broken.wav")
+        self.sound.load_sfx("Tree Hit", "Tree_hit.wav")
+        self.sound.load_sfx("DEATH", "Death.wav")
+        self.sound.load_sfx("beacon upgrade", "Beacon upgrade.wav")
+        self.sound.load_sfx("beacon add feul", "beacon_feul.wav")
 
+        
+        self.tree_hit_sound_timer = utils.Timer(0.1)
+        self.tree_hit_sound_timer.start()
+        
 
         # Trigger an initial scale setup
         self.scale_window(w, h)
@@ -150,6 +164,7 @@ class Froststep:
                     
                     self.player.hit_this_swing.add(enemy)
                     drops = enemy.hit(25) # Example damage
+                    self.sound.play_sfx("Hit")
                     if drops:
                         for _ in range(drops['membrane']):
                             drop_pos = enemy.world_pos + pygame.Vector2(random.randint(-20, 20), random.randint(-20, 20))
@@ -170,6 +185,7 @@ class Froststep:
 
             # --- Game Over Check ---
             if self.player.is_dead:
+                self.sound.play_sfx("DEATH")
                 utils.draw_text("YOU DIED", (w/2, h/2), 150 * self.scale['overall'], "darkred", centered=True, font="Rajdhani-Bold")
                 pygame.display.flip()
                 pygame.time.wait(3000) # Pause for 3 seconds
@@ -241,7 +257,8 @@ class Froststep:
                                 self.popout.add_top_pop_out(f"Picked up {self.items.names[checked_itms[0]]}",pygame.Vector2(w//2, 80), 1, center=True)
                                 match self.items.names[checked_itms[0]]:
                                     case "twig" if self.add("wood", 1): self.items.remove_item(checked_itms[0]) 
-                                    case "membrane" if self.add("membrane", 1): self.items.remove_item(checked_itms[0]) 
+                                    case "membrane" if self.add("membrane", 1): self.items.remove_item(checked_itms[0])
+                                    case "apple" if self.add("apple", 1): self.items.remove_item(checked_itms[0]) 
                                     case _: pass
                             elif can_deposit:
                                 
@@ -249,17 +266,22 @@ class Froststep:
                                 # Check if the currently selected slot actually has an item
                                 if self.slot - 1 < len(inv_items):
                                     item_name = inv_items[self.slot - 1][0]
-
-                                    self.popout.add_top_pop_out(f"Deposited 1 {list(self.inventory.keys())[self.slot - 1]}",pygame.Vector2(w//2, 80), 0.5, center=True)
+                                    upgraded = False
+                                    can_be_deposited = True
                                     # Decrease count
                                     self.inventory[item_name] -= 1
                                     match list(self.inventory.keys())[self.slot - 1]:
-                                        case "wood": self.beacon.add_fuel(1)
-                                        case "membrane":  self.beacon.add_fuel(3)
+                                        case "wood": upgraded = self.beacon.add_fuel(1)
+                                        case "membrane":  upgraded = self.beacon.add_fuel(3)
+                                        case "apple" :  self.popout.add_top_pop_out(f"Cannot use {list(self.inventory.keys())[self.slot - 1]} as fuel",pygame.Vector2(w//2, 80), 0.5, center=True); can_be_deposited = False
                                         case _: pass
-                                    
-                                    if self.inventory[item_name] <= 0:
-                                        del self.inventory[item_name]
+                                    if can_be_deposited:
+                                        self.popout.add_top_pop_out(f"Deposited 1 {list(self.inventory.keys())[self.slot - 1]}",pygame.Vector2(w//2, 80), 0.5, center=True)
+                                        self.sound.play_sfx("beacon add feul")
+                                        if upgraded: self.sound.play_sfx("beacon upgrade")
+                                        
+                                        if self.inventory[item_name] <= 0:
+                                            del self.inventory[item_name]
                                 else:
                                     self.popout.add_top_pop_out(f"This inventory slot has nothing",pygame.Vector2(w//2, 80), 0.5, center=True)
                                     
@@ -279,7 +301,7 @@ class Froststep:
                                 match item_name:
                                     case "wood": self.items.add_item("twig", self.world_pos, 0)
                                     case "membrane": self.items.add_item("membrane", self.world_pos, 1)
-                                    
+                                    case "apple":  self.items.add_item("apple", self.world_pos, 2)
                                     case _: pass
                                 
                                 # Remove from dictionary if count hits zero
@@ -479,12 +501,14 @@ class Froststep:
                     case "membrane":
                         # Assuming coal is index 1 in your sprite sheet
                         self.screen.blit(self.items_tex.get_image(1), (x_pos, y_pos))
+                    case "apple":
+                        self.screen.blit(self.items_tex.get_image(2), (x_pos, y_pos))
                     case _:
                         pass
                 
                 # Draw the amount text
                 utils.draw_text(
-                    text=str(item_amt), 
+                    text=str(int(item_amt)), 
                     position=(x_pos + 5, y_pos + 5), 
                     size=int(20 * self.scale['overall']), 
                     color="#FFFFFF"
@@ -538,9 +562,12 @@ class Froststep:
                 if mouse_pressed:
                     if self.player.fist_hitbox.colliderect(tree.get_rect(offset)):
                         if tree.hit():
+                            if self.tree_hit_sound_timer.has_elapsed(): self.sound.play_sfx("Tree Hit", 0.5); self.tree_hit_sound_timer.restart()
                             self.items.add_item("twig", tree.pos, 0)
                             self.trees.remove(tree)
                             self.update_tree_data()
+                        else:
+                            self.sound.play_sfx("Tree Broken", 1.5)
 
         # Fog System Optimization: Clear the existing surface instead of creating a new one
         self.fog.fill((0, 0, 0, 255))

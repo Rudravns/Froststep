@@ -187,18 +187,22 @@ def load_image(path: str) -> pygame.Surface:
         raise FileNotFoundError(f"Unable to load image at '{path}': {e}") from e
 
 
-def load_sound(path: str) -> pygame.mixer.Sound:
+def load_sound(filename: str) -> pygame.mixer.Sound:
     """Load a sound from disk."""
     try:
         script_dir = os.path.dirname(os.path.abspath(__file__))
         BASE_DIR = os.path.abspath(
-            os.path.join(script_dir, "Assets", "Sounds")
+            os.path.join(script_dir, "Assets", "Sounds", "SFX")
         )
-        path = os.path.join(BASE_DIR, path)
+        full_path = os.path.join(BASE_DIR, filename)
+        
+        # We check existence here after the path is actually built
+        if not os.path.exists(full_path):
+            raise FileNotFoundError(f"File not found at: {full_path}")
             
-        return pygame.mixer.Sound(path)
+        return pygame.mixer.Sound(full_path)
     except pygame.error as e:
-        raise FileNotFoundError(f"Unable to load sound at '{path}': {e}") from e
+        raise FileNotFoundError(f"Unable to load sound at '{full_path}': {e}") from e
 
 
 
