@@ -774,7 +774,7 @@ class Froststep:
         self.inventory = {
             "membrane" : 4,
             "wood" : 4,
-        }
+        } if self.Master_debug_mode else {}
         self.slot = 1
         
         # Reset world items and timers

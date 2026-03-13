@@ -4,6 +4,8 @@
 Collect resources, keep the beacon alive, and survive the cold as long as you can.
 
 > Built for the **Pygame Community Winter Jam 2026**
+>
+> Submitted to **itch.io**
 
 ---
 
