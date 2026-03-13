@@ -59,13 +59,46 @@ def scale(
 # =====================================================
 # Text rendering
 # =====================================================
+
+# Initialize font cache
 _font_cache = {}
+
+def load_font(name: str, size: int, bold: bool = False) -> pygame.font.Font:
+    """
+    Load a font from disk based on the family name and style.
+    Automatically grabs the -Bold.ttf variant if bold=True.
+    """
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    BASE_DIR = os.path.abspath(
+        os.path.join(script_dir, "Assets", "Fonts")
+    )
+
+    # Determine which file variant to load based on the bold flag
+    style = "Bold" if bold else "Regular"
+    filename = f"{name}-{style}.ttf"
+
+    # 1st try: Look inside a subfolder (e.g., Assets/Fonts/Rajdhani/Rajdhani-Regular.ttf)
+    font_path = os.path.join(BASE_DIR, name, filename)
+
+    # 2nd try: Look in the main Fonts folder (e.g., Assets/Fonts/Rajdhani-Regular.ttf)
+    if not os.path.exists(font_path):
+        font_path = os.path.join(BASE_DIR, filename)
+        
+    try:
+        return pygame.font.Font(font_path, size)
+    except Exception as e:
+        print(f"Warning: Unable to load custom font '{filename}': {e}. Falling back to Arial.")
+        # Fallback to standard system font
+        sys_font = pygame.font.SysFont("Arial", size)
+        sys_font.set_bold(bold)
+        return sys_font
+
 def draw_text(
         text: str,
         position,
         size: int|float = 50,
         color: str | pygame.Color | tuple[int, int, int] = "#000000",
-        font: Optional[pygame.font.Font] = None,
+        font: Optional[str | pygame.font.Font] = None,
         bold: bool = False,
         italic: bool = False,
         underline: bool = False,
@@ -83,31 +116,60 @@ def draw_text(
     if screen is None and draw:
         raise RuntimeError("Display surface not initialized. Call pygame.display.set_mode().")
 
-    # Create font if none provided
-    if font is None:
-        key = ("Arial", int(scale(size)))
-        if key not in _font_cache:
-            _font_cache[key] = pygame.font.SysFont("Arial", int(scale(size)))
-        font = _font_cache[key]
+    # Assuming `scale()` is defined elsewhere in your utilities
+    # If not, you might need to adjust this depending on how you import `scale`
+    scaled_size = int(scale(size)) if 'scale' in globals() else int(size)
 
-    # Convert color string to pygame.Color
+    # 1. Determine font object or string name
+    if isinstance(font, pygame.font.Font):
+        font_obj = font
+        # Apply pseudo-styles directly to an existing font object
+        font_obj.set_bold(bold)
+        font_obj.set_italic(italic)
+        font_obj.set_underline(underline)
+    else:
+        # Default to Arial if no font is specified
+        font_name = font if font is not None else "Arial"
+        
+        # Unique cache key based on all styling parameters
+        key = (font_name, scaled_size, bold, italic, underline)
+        
+        if key not in _font_cache:
+            # Check if it's one of our custom downloaded fonts
+            if font_name in ["Rajdhani", "Silkscreen"]:
+                # Load the custom file (handles bold internally by picking correct .ttf)
+                new_font = load_font(font_name, scaled_size, bold) # pyright: ignore[reportCallIssue]
+                new_font.set_italic(italic)
+                new_font.set_underline(underline)
+            else:
+                # Load standard system font
+                new_font = pygame.font.SysFont(font_name, scaled_size)
+                new_font.set_bold(bold)
+                new_font.set_italic(italic)
+                new_font.set_underline(underline)
+                
+            _font_cache[key] = new_font
+        
+        font_obj = _font_cache[key]
+
+    # 2. Convert color string to pygame.Color
     if isinstance(color, str):
         color = pygame.Color(color)  # type: ignore
 
-    # Apply font styles
-    font.set_bold(bold) # pyright: ignore[reportOptionalMemberAccess]
-    font.set_italic(italic) # pyright: ignore[reportOptionalMemberAccess]
-    font.set_underline(underline)   # pyright: ignore[reportOptionalMemberAccess]
-
-    # Render text
-    text_surface = font.render(str(text), True, color) # pyright: ignore[reportOptionalMemberAccess]
-    text_rect = text_surface.get_rect(topleft=scale(position)) if not centered else text_surface.get_rect(center=scale(position))
+    # 3. Render text
+    text_surface = font_obj.render(str(text), True, color) # pyright: ignore[reportOptionalMemberAccess]
+    
+    scaled_pos = scale(position) if 'scale' in globals() else position
+    
+    if centered:
+        text_rect = text_surface.get_rect(center=scaled_pos)
+    else:
+        text_rect = text_surface.get_rect(topleft=scaled_pos)
     
     if draw:
         screen.blit(text_surface, text_rect)
 
     return text_surface, text_rect
-
 
 # =====================================================
 # Loading / Saving Files
@@ -123,19 +185,6 @@ def load_image(path: str) -> pygame.Surface:
         return image
     except pygame.error as e:
         raise FileNotFoundError(f"Unable to load image at '{path}': {e}") from e
-
-
-def load_font(path: str, size: int) -> pygame.font.Font:
-    """Load a font from disk."""
-    try:
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        BASE_DIR = os.path.abspath(
-            os.path.join(script_dir, "Assets", "Fonts")
-        )
-        
-        return pygame.font.Font(os.path.join(BASE_DIR, path), size)
-    except IOError as e:
-        raise FileNotFoundError(f"Unable to load font at '{path}': {e}") from e
 
 
 def load_sound(path: str) -> pygame.mixer.Sound:
@@ -458,3 +507,169 @@ class VectorizedRects:
                (self.top < obottom) & (self.bottom > oy)
     
 
+class Button:
+
+    def __init__(
+        self,
+        pos,
+        size,
+        text="",
+        color=(60, 60, 60),
+        hover_color=(100, 100, 100),
+        press_color=(150, 150, 150),
+        text_color=(255, 255, 255),
+        border_color=None,
+        border_width=0,
+        radius=8,
+        font = None,
+        callback=None,
+        center=False,
+        enabled=True
+    ):
+
+        self.screen = pygame.display.get_surface()
+
+        self.pos = list(pos)
+        self.size = list(size)
+        
+    
+        self.rect = pygame.Rect(0, 0, *size)
+        if center:
+            self.rect.center = pos
+        else:
+            self.rect.topleft = pos
+
+        self.text = text
+        self.text_color = text_color
+
+        self.color = color
+        self.hover_color = hover_color
+        self.press_color = press_color
+
+        self.border_color = border_color
+        self.border_width = border_width
+        self.radius = radius
+
+        self.callback = callback
+        self.enabled = enabled
+
+        self.hovered = False
+        self.pressed = False
+
+        self.font_size = int(size[1] * 0.6)
+        self.font = font
+
+        # animation
+        self.scale = 1
+        self.target_scale = 1
+
+        self.center_anchor = center
+        self.anchor = self.rect.center if center else self.rect.topleft
+        self.center = center
+        
+
+        
+
+
+        self.org_size = list(size)
+        self.org_pos = pos
+        self.base_render_size = [
+            int(self.org_size[0]),
+            int(self.org_size[1])
+        ]
+
+    def handle_event(self, event):
+
+        if not self.enabled:
+            return
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1 and self.hovered:
+                self.pressed = True
+
+        if event.type == pygame.MOUSEBUTTONUP:
+            if event.button == 1:
+                if self.pressed and self.hovered:
+                    if self.callback:
+                        self.callback()
+                self.pressed = False
+
+    def update(self):
+
+        mouse = pygame.mouse.get_pos()
+        self.hovered = self.rect.collidepoint(mouse)
+
+        if self.pressed:
+            self.target_scale = 0.95
+        elif self.hovered:
+            self.target_scale = 1.08
+        else:
+            self.target_scale = 1
+
+        # smooth animation
+        self.scale += (self.target_scale - self.scale) * 0.2
+
+        new_w = int(self.base_render_size[0] * self.scale)
+        new_h = int(self.base_render_size[1] * self.scale)
+
+        self.rect.size = (new_w, new_h)
+
+        if self.center_anchor:
+            self.rect.center = self.anchor
+        else:
+            self.rect.topleft = self.anchor
+
+        self.font_size = int(self.rect.height * 0.55)
+
+    def draw(self):
+
+        if not self.enabled:
+            draw_color = (110,110,110)
+        elif self.pressed:
+            draw_color = self.press_color
+        elif self.hovered:
+            draw_color = self.hover_color
+        else:
+            draw_color = self.color
+
+        pygame.draw.rect(
+            self.screen,
+            draw_color,
+            self.rect,
+            border_radius=self.radius
+        )
+
+        if self.border_width > 0 and self.border_color:
+            pygame.draw.rect(
+                self.screen,
+                self.border_color,
+                self.rect,
+                self.border_width,
+                border_radius=self.radius
+            )
+
+        # draw text using YOUR function
+        if self.text:
+            draw_text(
+                self.text,
+                self.rect.center,
+                self.font_size,
+                color=self.text_color,
+                centered=True,
+                surface=self.screen,
+                font=self.font
+            )
+
+    def resize(self, scale):
+
+        self.base_render_size = [
+            int(self.org_size[0] * scale["overall"]),
+            int(self.org_size[1] * scale["overall"])
+        ]
+
+        new_x = int(self.org_pos[0] * scale["width"])
+        new_y = int(self.org_pos[1] * scale["height"])
+
+        self.anchor = (new_x, new_y)
+
+        self.rect.size = tuple(self.base_render_size) # pyright: ignore[reportAttributeAccessIssue]

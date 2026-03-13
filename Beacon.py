@@ -58,9 +58,9 @@ class Beacon:
         """Returns the current warmth/light radius based on the stage."""
         return self.images.get_image(self.stage).get_width()//2 * self.scale_factor
 
-    def check_deposit_rad(self, player:pygame.Rect, offset):
-        return player.colliderect(self.rect.move(offset[0], offset[1]))
-
+    def check_deposit_rad(self, player_world_rect: pygame.Rect):
+        """Checks for collision with the player in world coordinates."""
+        return self.rect.colliderect(player_world_rect)
 
     def draw(self, offset, debug=False):
         """Draws the beacon and its light radius to the screen."""

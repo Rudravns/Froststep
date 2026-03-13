@@ -12,6 +12,11 @@ class Player:
         self.velocity = pygame.Vector2(0, 0)
         self.player_direction = 0
         self.size = 40
+
+        # Stats
+        self.hp = 100
+        self.max_hp = 100
+        self.is_dead = False
         
         # Player rect and image handling
         self.rect = pygame.Rect(0, 0, self.size, self.size)
@@ -23,6 +28,7 @@ class Player:
         self.image_index = 0
         self.fist_animation_timer = utils.Timer(0.1)
         self.fist_animation_lenght = 5
+        self.hit_this_swing = set()
         
         # Scaling Cache to prevent resizing images 120 times a second
         self.cached_image = None
@@ -39,16 +45,19 @@ class Player:
         if mouse_down[0]:
             if self.image_index == 0:
                 self.image_index = 1
+                self.hit_this_swing.clear()
                 self.fist_animation_timer.start()
             
             if self.fist_animation_timer.has_elapsed():
                 self.image_index += 1
                 if self.image_index > self.fist_animation_lenght:
                     self.image_index = 1
+                    self.hit_this_swing.clear() # Clear for next loop in the swing
                 self.fist_animation_timer.reset()
                 self.fist_animation_timer.start()
         else:
             self.image_index = 0
+            self.hit_this_swing.clear()
 
         # Movement Logic
         input_vel = pygame.Vector2(0, 0)
@@ -108,16 +117,36 @@ class Player:
         self.rect.center = (int(self.world_pos.x), int(self.world_pos.y))
         
         # Beacon collision
-        if self.circle_to_rect_collition(beacon_pos, beacon_radius):
-            direction = self.world_pos - pygame.Vector2(beacon_pos)
-            if direction.length() == 0: direction = pygame.Vector2(1, 0)
-            else: direction = direction.normalize()
-            self.world_pos = pygame.Vector2(beacon_pos) + direction * (beacon_radius + self.size * 0.8)
+        # Smoother Circle-to-AABB collision resolution
+        half_size = self.size / 2
+        closest_x = max(self.world_pos.x - half_size, min(beacon_pos[0], self.world_pos.x + half_size))
+        closest_y = max(self.world_pos.y - half_size, min(beacon_pos[1], self.world_pos.y + half_size))
+        
+        dist_vec = pygame.Vector2(closest_x, closest_y) - pygame.Vector2(beacon_pos)
+        dist = dist_vec.length()
+
+        if dist < beacon_radius:
+            push_dir = dist_vec.normalize() if dist > 0 else (self.world_pos - pygame.Vector2(beacon_pos)).normalize()
+            self.world_pos += push_dir * (beacon_radius - dist)
             self.rect.center = (int(self.world_pos.x), int(self.world_pos.y))
 
         # Clamp boundaries
         self.world_pos.x = max(self.size/2, min(self.world_pos.x, map_size[0] - self.size/2))
         self.world_pos.y = max(self.size/2, min(self.world_pos.y, map_size[1] - self.size/2))
+
+    def is_attacking(self):
+        return not self.image_index == 0
+
+    def hit(self, dmg):
+        """Reduces player HP and handles death."""
+        if self.is_dead: return False
+        
+        self.hp -= dmg
+        if self.hp <= 0:
+            self.hp = 0
+            self.is_dead = True
+            return True # Player has died
+        return False
 
     def __smooth_rotation(self, rot, lerp_factor=0.15):
         rot = rot % 360

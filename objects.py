@@ -1,7 +1,5 @@
 import pygame
 import numpy as np
-import sys
-import time
 import random
 import utilities as utils
 

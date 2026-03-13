@@ -120,28 +120,37 @@ class TextPopout:
         self.top_queue = [] 
         self.bottom_queue = [] 
         self.screen = pygame.display.get_surface()
-        self.size = 50
 
-    def add_top_pop_out(self, text:str, pos:pygame.Vector2, time:float, fall_by:float = 30.0, center:bool = False):
+    def add_top_pop_out(self, text:str, pos:pygame.Vector2, time:float, fall_by:float = 30.0, center:bool = False, color = "White", size = 50):
         # We store all info in a dict and append it to the end of the line
         # Note: We do NOT call timer.start() here
         self.top_queue.append({
             "text": text,
             "timer": utilities.Timer(time),
-            "pos": pygame.Vector2(pos),
-            "fall_by": fall_by,
+            "original_pos": pygame.Vector2(pos),
+            "pos": pygame.Vector2(pos), # This will be the scaled position
+            "original_fall_by": fall_by,
+            "fall_by": fall_by, # This will be the scaled value
             "center": center,
-            "started": False
+            "started": False,
+            "color": color,
+            "original_size": size,
+            "size": size # This will be the scaled size
         })
     
-    def add_bottom_pop_out(self, text:str, pos:pygame.Vector2, time:float, rise_by:float = 30.0, center:bool = False):
+    def add_bottom_pop_out(self, text:str, pos:pygame.Vector2, time:float, rise_by:float = 30.0, center:bool = False, color = "White", size = 50):
         self.bottom_queue.append({
             "text": text,
             "timer": utilities.Timer(time),
-            "pos": pygame.Vector2(pos),
-            "rise_by": rise_by,
+            "original_pos": pygame.Vector2(pos),
+            "pos": pygame.Vector2(pos), # Scaled position
+            "original_rise_by": rise_by,
+            "rise_by": rise_by, # Scaled value
             "center": center,
-            "started": False
+            "started": False,
+            "color": color,
+            "original_size": size,
+            "size": size, # Scaled size
         })
 
     def draw_bottom_pop_out(self, dt:float):
@@ -160,10 +169,10 @@ class TextPopout:
         if timer.has_elapsed():
             self.bottom_queue.pop(0) # Remove and move to next
         else:
-            progress = timer.get_time() / timer.duration
+            progress = timer.get_time_left() / timer.duration
             pos = current["pos"]
             current_pos = pygame.Vector2(pos.x, pos.y - (current["rise_by"] * progress))
-            utilities.draw_text(current["text"], current_pos, size=self.size, color="white", centered=current["center"])
+            utilities.draw_text(current["text"], (current_pos.x,current_pos.y), size=current["size"], color=current["color"], centered=current["center"])
 
     def draw_top_pop_out(self, dt:float):
         if not self.top_queue:
@@ -182,24 +191,23 @@ class TextPopout:
             progress = timer.get_time_left() / timer.duration
             pos = current["pos"]
             current_pos = pygame.Vector2(pos.x, pos.y + (current["fall_by"] * progress))
-            utilities.draw_text(current["text"], (current_pos.x, current_pos.y), size=self.size, color="white", centered=current["center"])
+            utilities.draw_text(current["text"], (current_pos.x, current_pos.y), size=current["size"], color=current["color"], centered=current["center"])
 
     def draw_all(self, dt:float):
         self.draw_top_pop_out(dt)
         self.draw_bottom_pop_out(dt)
 
     def resize(self, scale):
-        # Update the size
-        self.size = 50 * scale["overall"]
-        
         # Update positions for everything waiting in the top queue
         for item in self.top_queue:
-            item["pos"].x *= scale["width"]
-            item["pos"].y *= scale["height"]
-            item["fall_by"] *= scale["overall"]
+            item["pos"].x = item["original_pos"].x * scale["width"]
+            item["pos"].y = item["original_pos"].y * scale["height"]
+            item["fall_by"] = item["original_fall_by"] * scale["overall"]
+            item["size"] = item["original_size"] * scale["overall"]
 
         # Update positions for everything waiting in the bottom queue
         for item in self.bottom_queue:
-            item["pos"].x *= scale["width"]
-            item["pos"].y *= scale["height"]
-            item["rise_by"] *= scale["overall"]
+            item["pos"].x = item["original_pos"].x * scale["width"]
+            item["pos"].y = item["original_pos"].y * scale["height"]
+            item["rise_by"] = item["original_rise_by"] * scale["overall"]
+            item["size"] = item["original_size"] * scale["overall"]
