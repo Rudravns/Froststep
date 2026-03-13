@@ -23,6 +23,7 @@ class Beacon:
         self.fuel = 0
         # Fuel required to reach the NEXT stage (Stage 1 requires 3, Stage 2 requires 5, etc.)
         self.fuel_requirements = [3, 5, 8, 12, 15, 25] 
+
         
         # The warmth/light radius for each of the 6 stages
         self.radii = [150+size, 250+size, 350+size, 450+size, 600+size, 800+size]
@@ -56,11 +57,12 @@ class Beacon:
 
     def get_radius(self):
         """Returns the current warmth/light radius based on the stage."""
-        return self.images.get_image(self.stage).get_width()//2 * self.scale_factor
+        return self.images.get_image(self.stage).get_width() // 2
 
     def check_deposit_rad(self, player_world_rect: pygame.Rect):
         """Checks for collision with the player in world coordinates."""
-        return self.rect.colliderect(player_world_rect)
+        # Inflate slightly to ensure interaction range is forgiving vs collision
+        return self.rect.inflate(20, 20).colliderect(player_world_rect)
 
     def draw(self, offset, debug=False):
         """Draws the beacon and its light radius to the screen."""
@@ -93,6 +95,8 @@ class Beacon:
         self.scale_factor = scale['overall']
         new_size = int(self.original_size * self.scale_factor)
         self.images.rezize_images((new_size, new_size))
+        self.rect.size = (new_size, new_size)
+        self.rect.center = self.pos # pyright: ignore[reportAttributeAccessIssue]
         self._update_light_surface()
 
 

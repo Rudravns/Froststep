@@ -37,12 +37,13 @@ class SoundManager:
 
     def load_music(self, name, filepath):
         """Registers a background music track."""
-        if os.path.exists(filepath):
-            script_dir = os.path.dirname(os.path.abspath(__file__))
-            BASE_DIR = os.path.abspath(
-                os.path.join(script_dir, "Assets", "Sounds", "Music")
-            )
-            final_path = os.path.join(BASE_DIR, filepath)
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        BASE_DIR = os.path.abspath(
+            os.path.join(script_dir, "Assets", "Sounds", "Music")
+        )
+        final_path = os.path.join(BASE_DIR, filepath)
+        if os.path.exists(final_path):
+            
             self.music_dict[name] = final_path
         else:
             print(f"Warning: Music file not found at {final_path}")

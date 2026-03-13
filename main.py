@@ -22,11 +22,13 @@ class Froststep:
         self.clock = pygame.time.Clock()
         self.dt = 0
         self.mode = "menu"
+        self.stage = "Running"
+        self.running = False
         
         #debug
-        self.Master_debug_mode = True
-        self.UI_debug_mode = True
-        self.hitbox_debug = True
+        self.Master_debug_mode = False
+        self.UI_debug_mode = False
+        self.hitbox_debug = False
         self.console_debug = False
 
         #world
@@ -87,9 +89,13 @@ class Froststep:
         # Cache the vision scaling so we don't scale it 120 times a second
         self.cached_vision_surf = None
         self.last_warmth = -1 
+        
+        self.has_won = False
+        self.win_circle_radius = 0
+        self.win_flash_alpha = 0
 
         #game features
-        self.time_left = 120 #<- in seconds
+        self.time_left = 12#<- in seconds
         self.time_speed = 100
         self.warmth = 1
 
@@ -101,8 +107,15 @@ class Froststep:
         #warmth meter
         self.warmth_bar = ui.WarmthBar((960, 490), image_path="Assets/Textures/Thermometer.png", size= (150,190))
 
-        #Menu Items
-        self.menu_buttons = [utils.Button(pos = (w/2,h/2), size = (200,100), text= "start", center=True)]
+        #buttons
+        self.menu_buttons = [] # Will be created in menu()
+        self.game_over_buttons = [
+            utils.Button(pos=(w/2, h/2 + 100), size=(250, 60), text="Restart", center=True, callback=self.restart_game),
+            utils.Button(pos=(w/2, h/2 + 180), size=(250, 60), text="Exit to Main Menu", center=True, callback=self.go_to_menu)
+        ]
+        self.win_buttons = [
+            utils.Button(pos=(utils.BASE_SIZE[0] - 120, 50), size=(200, 60), text="Exit", center=True, callback=self.go_to_menu)
+        ]
         
         #sound stuff
         self.sound = Sound.SoundManager()
@@ -112,6 +125,7 @@ class Froststep:
         self.sound.load_sfx("DEATH", "Death.wav")
         self.sound.load_sfx("beacon upgrade", "Beacon upgrade.wav")
         self.sound.load_sfx("beacon add feul", "beacon_feul.wav")
+        self.sound.load_music("main menu music", "glacial_ambient.wav")
 
         
         self.tree_hit_sound_timer = utils.Timer(0.1)
@@ -126,8 +140,10 @@ class Froststep:
 
 
     def run(self):  
-        while True:
-            #Reset the game state here if needed
+        self.sound.stop_music()
+        self.stage = "Running"
+        self.running = True
+        while self.running:
             self.dt = self.clock.tick(60) / 1000.0
             self.screen.fill((0, 0, 0))
 
@@ -143,86 +159,90 @@ class Froststep:
             view_rect.clamp_ip(map_image.get_rect()) # Ensure we don't look outside the map
             self.screen.blit(map_image, (0, 0), area=view_rect)
 
-            #update enemy first
-            time_speed = self.dt * abs(round((abs(self.player.velocity.length_squared())*(self.warmth*0.03))))
-            for enemy in self.enemies[:]: # Iterate over a copy to allow removal
-                damage_dealt = enemy.update(self.dt, self.player.world_pos, self.map_size, self.tree_rects, self.enemies, player_warmth=self.warmth)
-                if damage_dealt > 0:
-                    if self.player.hit(damage_dealt):
-                        # Player died, handle game over
-                        pass # Game over is handled below
-                    # Show damage popout text
-                    self.popout.add_bottom_pop_out(f"-{damage_dealt}", pygame.Vector2(50,100), 1.0, rise_by=60, center=True, color="red", size = 30)
-
+            # --- Drawing (unconditional) ---
+            for enemy in self.enemies:
                 enemy.draw((offset_x, offset_y), self.hitbox_debug)
-
-                # Check for hits (if player is attacking)
-                enemy_screen_rect = enemy.rect.move(offset_x, offset_y)
-                if (self.player.is_attacking() and 
-                    enemy not in self.player.hit_this_swing and 
-                    self.player.fist_hitbox.colliderect(enemy_screen_rect)):
-                    
-                    self.player.hit_this_swing.add(enemy)
-                    drops = enemy.hit(25) # Example damage
-                    self.sound.play_sfx("Hit")
-                    if drops:
-                        for _ in range(drops['membrane']):
-                            drop_pos = enemy.world_pos + pygame.Vector2(random.randint(-20, 20), random.randint(-20, 20))
-                            self.items.add_item("membrane", drop_pos, 1)
-                        self.enemies.remove(enemy)
-
-
-            #draw UI elements here
             self.player.draw(self.hitbox_debug, (offset_x, offset_y), self.scale)
             self.items.draw((offset_x, offset_y), self.hitbox_debug)
-            self.draw_world((offset_x, offset_y))
+            self.draw_world((offset_x, offset_y), self.stage)
             self.draw_ui(pygame.Vector2((offset_x, offset_y)))
-
-            #update elements
-            self.update_world()
-            self.player.update(100 * self.warmth, self.dt, self.map_size, self.beacon.pos, self.beacon.get_radius(), self.tree_rects, (offset_x, offset_y))
             self.draw_inv()
 
+            if self.has_won:
+                for bts in self.win_buttons:
+                    bts.update()
+                    bts.draw()
+
+            # --- Updates (conditional on stage) ---
+            if self.stage == "Running":
+                # Enemy updates
+                for enemy in self.enemies[:]: # Iterate over a copy to allow removal
+                    damage_dealt = enemy.update(self.dt, self.player.world_pos, self.map_size, self.tree_rects, self.enemies, player_warmth=self.warmth)
+                    if damage_dealt > 0:
+                        if self.player.hit(damage_dealt):
+                            pass # Game over is handled below
+                        self.popout.add_bottom_pop_out(f"-{damage_dealt}", pygame.Vector2(50,100), 1.0, rise_by=60, center=True, color="red", size = 30)
+
+                    # Player attacking enemy
+                    enemy_screen_rect = enemy.rect.move(offset_x, offset_y)
+                    if (self.player.is_attacking() and 
+                        enemy not in self.player.hit_this_swing and 
+                        self.player.fist_hitbox.colliderect(enemy_screen_rect)):
+                        
+                        self.player.hit_this_swing.add(enemy)
+                        drops = enemy.hit(25) # Example damage
+                        self.sound.play_sfx("Hit")
+                        if drops:
+                            for _ in range(drops['membrane']):
+                                drop_pos = enemy.world_pos + pygame.Vector2(random.randint(-20, 20), random.randint(-20, 20))
+                                self.items.add_item("membrane", drop_pos, 1)
+                            self.enemies.remove(enemy)
+
+                # World and player updates
+                self.update_world()
+                self.player.update(100 * self.warmth, self.dt, self.map_size, self.beacon.pos, self.beacon.get_radius(), self.tree_rects, (offset_x, offset_y))
+
             # --- Game Over Check ---
-            if self.player.is_dead:
+            if (self.player.is_dead or self.time_left <= 0 )and self.stage == "Running":
+                self.stage = "Dead"
                 self.sound.play_sfx("DEATH")
-                utils.draw_text("YOU DIED", (w/2, h/2), 150 * self.scale['overall'], "darkred", centered=True, font="Rajdhani-Bold")
-                pygame.display.flip()
-                pygame.time.wait(3000) # Pause for 3 seconds
-                self.reset_game()
-                return
             
-          
-            # check if the itms could be picked up or not
-            player_rect = self.player.get_rect((offset_x, offset_y), self.scale)
-            
-            # Convert screen-space rect back to world-space before checking collisions!
-            world_player_rect = player_rect.copy()
-            world_player_rect.x -= offset_x
-            world_player_rect.y -= offset_y
-            
-            if self.hitbox_debug:
-                pygame.draw.rect(self.screen, "green", player_rect, 2)
-            
-            checked_itms = self.items.check_can_remove(world_player_rect)
-            can_deposit = self.beacon.check_deposit_rad(self.player.rect)
-            
-            # If the list is not empty, you can now process the pickups!
-            if checked_itms:
-                if self.console_debug: print(f"Standing on items at indices: {checked_itms}")
-                utils.draw_text(text=f"Press [e] to pick up item", color=(255,255,255), 
-                                position=(w//2, 580*self.scale['height']), 
-                                size=50*self.scale['overall'], centered=True)
-            elif can_deposit:
-                utils.draw_text(text=f"Press [e] to deposit item", color=(255,255,255), 
-                                position=(w//2, 580*self.scale['height']), 
-                                size=50*self.scale['overall'], centered=True)
+            if self.stage == "Dead":
+                self.death(w,h)
+                for bts in self.game_over_buttons:
+                    bts.update()
+                    bts.draw()
+            elif self.stage == "Running":
+                # check if the items could be picked up or not
+                player_rect = self.player.get_rect((offset_x, offset_y), self.scale)
+                world_player_rect = player_rect.copy()
+                world_player_rect.x -= offset_x
+                world_player_rect.y -= offset_y
+                
+                checked_itms = self.items.check_can_remove(world_player_rect)
+                can_deposit = self.beacon.check_deposit_rad(self.player.rect)
+                
+                if checked_itms:
+                    if self.console_debug: print(f"Standing on items at indices: {checked_itms}")
+                    utils.draw_text(text=f"Press [e] to pick up item", color=(255,255,255), 
+                                    position=(w//2, 580*self.scale['height']), 
+                                    size=50*self.scale['overall'], centered=True)
+                elif can_deposit:
+                    utils.draw_text(text=f"Press [e] to deposit item", color=(255,255,255), 
+                                    position=(w//2, 580*self.scale['height']), 
+                                    size=50*self.scale['overall'], centered=True)
             
             #Handle events
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    return
-                    
+                    self.quit_game()
+                if self.stage == "Dead":
+                    for bts in self.game_over_buttons:
+                        bts.handle_event(event)
+                
+                if self.has_won:
+                    for bts in self.win_buttons:
+                        bts.handle_event(event)
 
                 # Handle window resizing properly here, instead of every frame
                 if event.type == pygame.VIDEORESIZE:
@@ -231,26 +251,26 @@ class Froststep:
                     self.scale_window(w, h)
 
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                        return
-                        
+                    if self.stage == "Running":
+                        if event.key == pygame.K_ESCAPE:
+                            self.go_to_menu()
 
-                    #turn on/off bools
-                    if self.Master_debug_mode:
-                        if event.key == pygame.K_F1:
-                            self.UI_debug_mode = not self.UI_debug_mode
-                        if event.key == pygame.K_F2:
-                            self.hitbox_debug = not self.hitbox_debug
-                        if event.key == pygame.K_F3:
-                            self.console_debug = not self.console_debug
-                        if event.key == pygame.K_1:
-                            self.map_index = 0
-                        if event.key == pygame.K_2:
-                            self.map_index = 1
-                        if event.key == pygame.K_k:
-                            self.warmth -= 0.1
-                        if event.key == pygame.K_l:
-                            self.warmth += 0.1
+                        #turn on/off bools
+                        if self.Master_debug_mode:
+                            if event.key == pygame.K_F1:
+                                self.UI_debug_mode = not self.UI_debug_mode
+                            if event.key == pygame.K_F2:
+                                self.hitbox_debug = not self.hitbox_debug
+                            if event.key == pygame.K_F3:
+                                self.console_debug = not self.console_debug
+                            if event.key == pygame.K_1:
+                                self.map_index = 0
+                            if event.key == pygame.K_2:
+                                self.map_index = 1
+                            if event.key == pygame.K_k:
+                                self.warmth -= 0.1
+                            if event.key == pygame.K_l:
+                                self.warmth += 0.1
 
                         if event.key == pygame.K_e:
                             if checked_itms:
@@ -266,28 +286,27 @@ class Froststep:
                                 # Check if the currently selected slot actually has an item
                                 if self.slot - 1 < len(inv_items):
                                     item_name = inv_items[self.slot - 1][0]
-                                    upgraded = False
-                                    can_be_deposited = True
-                                    # Decrease count
-                                    self.inventory[item_name] -= 1
-                                    match list(self.inventory.keys())[self.slot - 1]:
-                                        case "wood": upgraded = self.beacon.add_fuel(1)
-                                        case "membrane":  upgraded = self.beacon.add_fuel(3)
-                                        case "apple" :  self.popout.add_top_pop_out(f"Cannot use {list(self.inventory.keys())[self.slot - 1]} as fuel",pygame.Vector2(w//2, 80), 0.5, center=True); can_be_deposited = False
+                                    fuel_val = 0
+                                    
+                                    match item_name:
+                                        case "wood": fuel_val = 1
+                                        case "membrane": fuel_val = 3
+                                        case "apple": 
+                                            self.popout.add_top_pop_out(f"Cannot use {item_name} as fuel", pygame.Vector2(w//2, 80), 0.5, center=True)
                                         case _: pass
-                                    if can_be_deposited:
-                                        self.popout.add_top_pop_out(f"Deposited 1 {list(self.inventory.keys())[self.slot - 1]}",pygame.Vector2(w//2, 80), 0.5, center=True)
+                                    
+                                    if fuel_val > 0:
+                                        self.inventory[item_name] -= 1
+                                        if self.inventory[item_name] <= 0: del self.inventory[item_name]
+                                        
+                                        upgraded = self.beacon.add_fuel(fuel_val)
+                                        self.popout.add_top_pop_out(f"Deposited 1 {item_name}", pygame.Vector2(w//2, 80), 0.5, center=True)
                                         self.sound.play_sfx("beacon add feul")
                                         if upgraded: self.sound.play_sfx("beacon upgrade")
-                                        
-                                        if self.inventory[item_name] <= 0:
-                                            del self.inventory[item_name]
+                                        if self.beacon.stage < self.beacon.max_stage:
+                                            self.popout.add_top_pop_out(f"Need {self.beacon.fuel_requirements[self.beacon.stage]-self.beacon.fuel} more to advance",pygame.Vector2(w//2, 80), 0.5, center=True)
                                 else:
                                     self.popout.add_top_pop_out(f"This inventory slot has nothing",pygame.Vector2(w//2, 80), 0.5, center=True)
-                                    
-                                    
-                                self.popout.add_top_pop_out(f"Need {self.beacon.fuel_requirements[self.beacon.stage]-self.beacon.fuel} more to advance",pygame.Vector2(w//2, 80), 0.5, center=True)
-                                    
 
                         if event.key == pygame.K_q:
                             inv_items = list(self.inventory.items())
@@ -326,7 +345,23 @@ class Froststep:
                     new_index = (current_index + event.y) % 3
                     self.slot = new_index + 1
 
-            
+            # --- WIN STATE CHECK & UPDATE ---
+            if self.beacon.stage >= self.beacon.max_stage and not self.has_won:
+                self.has_won = True
+                self.win_circle_radius = self.beacon.get_radius()
+                self.win_flash_alpha = 255 # Start the white flash at full brightness
+                self.enemies.clear()
+
+            if self.has_won:
+                self.warmth = 1.4 # Permanent warmth!
+                self.win_circle_radius += 3000 * self.dt # Expand out to clear the fog rapidly
+                self.win_flash_alpha = max(0, self.win_flash_alpha - 150 * self.dt) # Fade out the bright flash
+            else:
+                # Only decrement timer if player hasn't won
+                self.time_left -= self.dt
+                if self.time_left <= 0 or self.warmth <= 0:
+                    self.death(self.screen.get_width(), self.screen.get_height())
+                    break
 
             #Update game state here
             pygame.display.flip()
@@ -372,7 +407,14 @@ class Froststep:
         
         for bts in self.menu_buttons:
             bts.resize(self.scale)
+        
+        for bts in self.game_over_buttons:
+            bts.resize(self.scale)
             
+        for bts in self.win_buttons:
+            bts.resize(self.scale)
+
+        self.sound.play_music("main menu music")
         while True:
             w,h =  self.screen.get_size()
             self.dt = self.clock.tick(60) / 1000.0
@@ -382,7 +424,7 @@ class Froststep:
             utils.draw_text("FROSTSTEP", (w/2, 100*self.scale['height']), 200*self.scale['overall'],(255//2,255//2,255//2) , centered=True, font="Rajdhani-Bold", bold=True, italic=True)
             utils.draw_text("FROSTSTEP", (w/2, 110*self.scale['height']), 210*self.scale['overall'], (255,255,255), centered=True, font="Rajdhani-Bold", bold=True, italic=True)
 
-            
+           
 
             # -------- EVENTS --------
             for event in pygame.event.get():
@@ -544,7 +586,7 @@ class Froststep:
         elif self.warmth >= 0.39: 
             self.warmth -= 0.039 * self.dt
      
-    def draw_world(self, offset):
+    def draw_world(self, offset, stage):
         w, h = self.screen.get_size()
         offset_x, offset_y = offset
         
@@ -552,26 +594,29 @@ class Froststep:
         camera_rect = pygame.Rect(-offset_x, -offset_y, w, h)
         camera_rect.inflate_ip(200, 200) # Expand slightly so trees don't pop in abruptly at the edges
 
-        mouse_pressed = pygame.mouse.get_pressed()[0] # Call ONCE per frame
+        if stage == "Running":
+            mouse_pressed = pygame.mouse.get_pressed()[0] # Call ONCE per frame
 
-        for tree in self.trees[:]:
-            if camera_rect.colliderect(tree.rect):
-                tree.update()
-                tree.draw(offset, self.hitbox_debug)
+            for tree in self.trees[:]:
+                if camera_rect.colliderect(tree.rect):
+                    tree.update()
+                    tree.draw(offset, self.hitbox_debug)
 
-                if mouse_pressed:
-                    if self.player.fist_hitbox.colliderect(tree.get_rect(offset)):
-                        if tree.hit():
-                            if self.tree_hit_sound_timer.has_elapsed(): self.sound.play_sfx("Tree Hit", 0.5); self.tree_hit_sound_timer.restart()
-                            self.items.add_item("twig", tree.pos, 0)
-                            self.trees.remove(tree)
-                            self.update_tree_data()
-                        else:
-                            self.sound.play_sfx("Tree Broken", 1.5)
+                    if mouse_pressed:
+                        if self.player.fist_hitbox.colliderect(tree.get_rect(offset)):
+                            if tree.hit():
+                                if self.tree_hit_sound_timer.has_elapsed(): self.sound.play_sfx("Tree Hit", 0.5); self.tree_hit_sound_timer.restart()
+                                self.items.add_item("twig", tree.pos, 0)
+                                self.trees.remove(tree)
+                                self.update_tree_data()
+                            else:
+                                self.sound.play_sfx("Tree Broken", 1.5)
+        else: # Just draw if not running
+            for tree in self.trees:
+                if camera_rect.colliderect(tree.rect):
+                    tree.draw(offset, self.hitbox_debug)
 
         # Fog System Optimization: Clear the existing surface instead of creating a new one
-        self.fog.fill((0, 0, 0, 255))
-        
         safe_warmth = max(0.05, self.warmth)
         
         # CACHE CHECK: Only scale the image if the warmth ACTUALLY changed
@@ -584,9 +629,26 @@ class Froststep:
         screen_x = int(self.player.world_pos.x + offset[0] - vision_rect.width // 2)
         screen_y = int(self.player.world_pos.y + offset[1] - vision_rect.height // 2)
         
-        self.fog.blit(self.cached_vision_surf, (screen_x, screen_y), special_flags=pygame.BLEND_RGBA_SUB)  # pyright: ignore[reportArgumentType]
-        self.screen.blit(self.fog, (0, 0))
-
+        if not self.has_won:
+            # Normal Fog behavior
+            self.fog.fill((0, 0, 0, 240))
+            beacon_screen_pos = self.beacon.pos + pygame.Vector2(offset)
+            
+            # Punch hole for beacon
+            pygame.draw.circle(self.fog, (0, 0, 0, 0), (int(beacon_screen_pos.x), int(beacon_screen_pos.y)), self.beacon.get_radius())
+            # Punch hole for player vision by subtracting the vignette alpha
+            self.fog.blit(self.cached_vision_surf, (screen_x, screen_y), special_flags=pygame.BLEND_RGBA_SUB) # pyright: ignore[reportArgumentType]
+            self.screen.blit(self.fog, (0, 0))
+        else:
+            # FOG IS GONE! Draw the white expanding bright flash transition
+            if self.win_flash_alpha > 0:
+                flash_surf = pygame.Surface(self.screen.get_size(), pygame.SRCALPHA)
+                beacon_screen_pos = self.beacon.pos + pygame.Vector2(offset)
+                
+                # Draw a white circle with fading alpha
+                flash_color = (255, 255, 255, int(self.win_flash_alpha))
+                pygame.draw.circle(flash_surf, flash_color, (int(beacon_screen_pos.x), int(beacon_screen_pos.y)), int(self.win_circle_radius))
+                self.screen.blit(flash_surf, (0, 0))
         self.beacon.draw(offset, self.hitbox_debug)
     #=====================================================
     # Window elements
@@ -629,8 +691,17 @@ class Froststep:
         #Draw UI elements here
         w, h = self.screen.get_size()
 
-        time_left_pos = (w // 2 , int(30 * self.scale['height']))
-        utils.draw_text(text=f"Time Left: {round(self.time_left, 1)}s", position=time_left_pos, size=40, color="#FFFFFF", centered=True)
+        if self.has_won:
+            # WIN Text overrides the timer
+            utils.draw_text(text="You WIN", 
+                            position=(w // 2, int(50 * self.scale['height'])), 
+                            size=int(80 * self.scale['overall']), 
+                            color="#FFFFFF", 
+                            centered=True)
+        else:
+            # Normal Timer Text
+            time_left_pos = (w // 2 , int(50 * self.scale['height']))
+            utils.draw_text(text=f"Time Left: {round(self.time_left, 1)}s", position=time_left_pos, size=40, color="#FFFFFF", centered=True)
 
         self.draw_player_hp()
 
@@ -725,6 +796,7 @@ class Froststep:
         # Reset game state variables
         self.time_left = 120
         self.warmth = 1
+        self.has_won = False
         
         # Reset world objects (trees)
         self.trees = []
@@ -735,15 +807,28 @@ class Froststep:
 
     #callback funcs
     def start_game(self):
-        self.mode = "run"
+        self.reset_game()
         self.scale_window(*self.screen.get_size())
         self.run()
-        self.scale_window(*self.screen.get_size())
-        self.mode = "menu"
+        # After run() finishes, control returns to menu() loop
         
     def quit_game(self):
         pygame.quit()
         sys.exit()
+
+    #Win/Lose funcs
+    def death(self,w,h):
+        utils.draw_text("YOU DIED", (w/2, h/2), 150 * self.scale['overall'], "darkred", centered=True, font="Rajdhani-Bold")
+        
+        return
+
+    def restart_game(self):
+        self.reset_game()
+        self.stage = "Running"
+
+    def go_to_menu(self):
+        self.running = False
+
 #Entry point of the game
 if __name__ == "__main__":
     game = Froststep() 
