@@ -2,7 +2,9 @@ import pygame
 import sys, os, math, random
 from enemy import *
 import utilities as utils
-import objects, player
+import objects, player, ui
+from Beacon import Beacon
+
 
 class Froststep:
     def __init__(self):
@@ -24,7 +26,7 @@ class Froststep:
         self.Master_debug_mode = True
         self.UI_debug_mode = True
         self.hitbox_debug = True
-        self.console_debug = True
+        self.console_debug = False
 
         #world
         self.map_size = (5000, 5000)
@@ -35,35 +37,30 @@ class Froststep:
         self.map_index = 0
 
         #screen elements/objects
-        
-        #beacon 
-        self.beacon_img = utils.SpriteSheet()
-        self.beacon_img.extract_grid("Textures\\Beacon.png", crop_size=(64,64), scale=(400,400))
-        self.beacon_img_index = 0
-        self.beacon_cap = 10
-        self.beacon_storage = 0
-        
-        # We only need the base image for the light. 
-        self.beacon_light_radius = 200
-        self.beacon_light_base = utils.create_gradient("white", (1000, 1000), radius=self.beacon_light_radius, opposite=True, circular=True)
-        self.cached_beacon_light = None
-        self.last_scale_overall = -1 # Used to check if we need to rescale the light
+        self.popout = ui.TextPopout()
+
+
+        #beacon
+        self.beacon = Beacon((self.map_size[0] // 2, self.map_size[1] // 2), size=484)
 
         #player
         self.player = player.Player((self.map_size[0] // 3, self.map_size[1] // 2))
         w, h = self.screen.get_size() 
-        self.vision_base = utils.create_gradient("black", (1500, 1500), 400, opposite=True)
+        self.vision_base = utils.create_gradient("black", (1500, 1500),400, opposite=True)
         self.inventory = {
-            "wood" : 2,
+            "membrane" : 2,
         }
         """
         current items avalible:
         wood
+        membrane
+
         """
 
         #items
         self.items_tex = utils.SpriteSheet()
         self.items_tex.extract_single_image("items/twig.png", (40,40))
+        self.items_tex.extract_single_image("items/membrane.png", (40,40))
         self.slot = 1
         self.items = objects.Items(50) #droped items class NOT the slot UI items
         #self.items.add_item("stick", (500,500), 0)#test item
@@ -91,13 +88,16 @@ class Froststep:
         self.tree_rects = [] # Optimized list for Pygame C-level collisions
         self.create_map()
 
+        #warmth meter
+        self.warmth_bar = ui.WarmthBar((960, 490), image_path="Assets/Textures/Thermometer.png", size= (150,190))
+
         # Trigger an initial scale setup
         self.scale_window(w, h)
 
-    def run(self):
+    def run(self):  
         while True:
             #Reset the game state here if needed
-            self.dt = self.clock.tick(0) / 1000.0
+            self.dt = self.clock.tick(60) / 1000.0
             self.screen.fill((0, 0, 0))
 
             # Calculate camera offset (Top-Left of map relative to screen). Use integers for drawing.
@@ -113,7 +113,7 @@ class Froststep:
             self.screen.blit(map_image, (0, 0), area=view_rect)
 
             #update enemy first
-            time_speed = 0.1 #self.dt * abs(round((abs(self.player.velocity.length_squared())*(self.warmth*0.1))))
+            time_speed = self.dt * abs(round((abs(self.player.velocity.length_squared())*(self.warmth*0.03))))
             for enemy in self.enemies:
                 enemy.update(self.dt, self.player.world_pos, time_speed, self.map_size, [t.rect for t in self.trees])
                 enemy.draw((offset_x, offset_y), self.hitbox_debug)
@@ -126,9 +126,8 @@ class Froststep:
             self.draw_ui(pygame.Vector2((offset_x, offset_y)))
 
             #update elements
-            beacon_pos = (self.map_size[0] // 2, self.map_size[1] // 2)
-            self.player.update(100, self.dt, self.map_size, beacon_pos, 200*self.scale['overall'], self.tree_rects, (offset_x, offset_y))
             self.update_world()
+            self.player.update(100 * self.warmth, self.dt, self.map_size, self.beacon.pos, self.beacon.get_radius(), self.tree_rects, (offset_x, offset_y))
             self.draw_inv()
             
             # --- THE FIX ---
@@ -148,8 +147,16 @@ class Froststep:
             # If the list is not empty, you can now process the pickups!
             if checked_itms:
                 if self.console_debug: print(f"Standing on items at indices: {checked_itms}")
-                # Example of removing the first item you touch:
-                # self.items.remove_item(checked_itms[0])
+                utils.draw_text(text=f"Press [e] to pick up item", color=(255,255,255), 
+                                position=(w//2, 580*self.scale['height']), 
+                                size=50*self.scale['overall'], centered=True)
+
+            colide =  self.beacon.check_deposit_rad(self.player.get_screen_rect((offset_x, offset_y)), (offset_x, offset_y))
+            if colide:
+                utils.draw_text(text=f"Press [e] to deposit item", color=(255,255,255), 
+                                position=(w//2, 580*self.scale['height']), 
+                                size=50*self.scale['overall'], centered=True)
+            
 
             #Handle events
             for event in pygame.event.get():
@@ -186,9 +193,33 @@ class Froststep:
                         if event.key == pygame.K_l:
                             self.warmth += 0.1
 
-                        if event.key == pygame.K_e and checked_itms:
-                            match self.items.names[checked_itms[0]]:
-                                case "twig" if self.add("wood", 1): self.items.remove_item(checked_itms[0]) 
+                        if event.key == pygame.K_e:
+                            if checked_itms:
+                                self.popout.add_top_pop_out(f"Picked up {self.items.names[checked_itms[0]]}",pygame.Vector2(w//2, 80), 1, center=True)
+                                match self.items.names[checked_itms[0]]:
+                                    case "twig" if self.add("wood", 1): self.items.remove_item(checked_itms[0]) 
+                                    case "membrane" if self.add("membrane", 1): self.items.remove_item(checked_itms[0]) 
+                                    case _: pass
+                            elif colide:
+                                
+                                inv_items = list(self.inventory.items())
+                                # Check if the currently selected slot actually has an item
+                                if self.slot - 1 < len(inv_items):
+                                    item_name = inv_items[self.slot - 1][0]
+
+                                    self.popout.add_top_pop_out(f"Deposited 1 {list(self.inventory.keys())[self.slot - 1]}",pygame.Vector2(w//2, 80), 0.5, center=True)
+                                    # Decrease count
+                                    self.inventory[item_name] -= 1
+                                    match list(self.inventory.keys())[self.slot - 1]:
+                                        case "wood": self.beacon.add_fuel(1)
+                                        case "membrane":  self.beacon.add_fuel(3)
+                                        case _: pass
+                                else:
+                                    self.popout.add_top_pop_out(f"This inventory slot has nothing",pygame.Vector2(w//2, 80), 0.5, center=True)
+                                    
+                                    
+                                self.popout.add_top_pop_out(f"Need {self.beacon.fuel_requirements[self.beacon.stage]-self.beacon.fuel} more to advance",pygame.Vector2(w//2, 80), 0.5, center=True)
+                                    
 
                         if event.key == pygame.K_q:
                             inv_items = list(self.inventory.items())
@@ -201,6 +232,8 @@ class Froststep:
 
                                 match item_name:
                                     case "wood": self.items.add_item("twig", self.world_pos, 0)
+                                    case "membrane": self.items.add_item("membrane", self.world_pos, 1)
+                                    
                                     case _: pass
                                 
                                 # Remove from dictionary if count hits zero
@@ -299,7 +332,7 @@ class Froststep:
                 match item_name:
                     case "wood": 
                         self.screen.blit(self.items_tex.get_image(0), (x_pos, y_pos))
-                    case "coal":
+                    case "membrane":
                         # Assuming coal is index 1 in your sprite sheet
                         self.screen.blit(self.items_tex.get_image(1), (x_pos, y_pos))
                     case _:
@@ -333,9 +366,15 @@ class Froststep:
         self.world_pos.x = max(min_x, min(target_x, max_x))
         self.world_pos.y = max(min_y, min(target_y, max_y))
 
-        self.time_speed = self.dt * abs(round((abs(self.player.velocity.length_squared())*(self.warmth*0.1))))
+        self.time_speed = self.dt * abs(round((abs(self.player.velocity.length_squared())*(self.warmth*0.01))))
         self.time_left -= self.time_speed
         
+        dist = self.beacon.get_distance_from(self.player.world_pos)
+        if dist <= 1000 and self.warmth <= 1.4:
+            self.warmth += ((dist/10000) + 0.1) * self.dt
+            self.time_left += 0.1 * self.dt
+        elif self.warmth >= 0.39: 
+            self.warmth -= 0.039 * self.dt
     def draw_world(self, offset):
         w, h = self.screen.get_size()
         offset_x, offset_y = offset
@@ -358,9 +397,6 @@ class Froststep:
                             self.trees.remove(tree)
                             self.update_tree_data()
 
-        beacon_pos = ((self.map_size[0] // 2) + offset_x, (self.map_size[1] // 2) + offset_y)
-        radius = 200 
-        
         # Fog System Optimization: Clear the existing surface instead of creating a new one
         self.fog.fill((0, 0, 0, 255))
         
@@ -379,21 +415,7 @@ class Froststep:
         self.fog.blit(self.cached_vision_surf, (screen_x, screen_y), special_flags=pygame.BLEND_RGBA_SUB)  # pyright: ignore[reportArgumentType]
         self.screen.blit(self.fog, (0, 0))
 
-        # CACHE CHECK: Only scale the beacon light if the screen was resized
-        if self.scale['overall'] != self.last_scale_overall or self.cached_beacon_light is None:
-            self.cached_beacon_light = pygame.transform.scale(self.beacon_light_base, self.beacon_light_resize)
-            self.last_scale_overall = self.scale['overall']
-
-        # Get rect to easily center the image
-        beacon_rect = self.cached_beacon_light.get_rect(center=beacon_pos)
-        self.screen.blit(self.cached_beacon_light, beacon_rect.topleft)
-
-        rsize =  int(radius * self.scale['overall'])
-        self.screen.blit(self.beacon_img.get_image(self.beacon_img_index), (beacon_pos[0] - rsize, beacon_pos[1] - rsize))
-
-
-        if self.hitbox_debug:
-            pygame.draw.circle(self.screen, (255, 0, 0), beacon_pos, int(radius * self.scale['overall']),3)
+        self.beacon.draw(offset, self.hitbox_debug)
     #=====================================================
     # Window elements
     #=====================================================
@@ -402,9 +424,7 @@ class Froststep:
         self.scale['height'] = h / utils.BASE_SIZE[1]
         self.scale['overall'] = min(self.scale['width'], self.scale['height'])  
 
-        # Pre-calculate integers for transforms
-        self.beacon_light_resize = (int(2000 * self.scale['overall']), int(2000 * self.scale['overall']))
-        self.beacon_img.rezize_images((400*self.scale['overall'], 400*self.scale['overall']))
+        self.beacon.resize(self.scale)
         for tree in self.trees:
             tree.resize(self.scale)
 
@@ -413,6 +433,10 @@ class Froststep:
 
         self.items_tex.rezize_images((60 *self.scale['overall'],  60 *self.scale['overall']))
         self.items.resize(self.scale)
+        self.warmth_bar.resize(self.scale)
+        self.popout.resize(self.scale)
+
+
 
         self.update_tree_data()
  
@@ -426,6 +450,10 @@ class Froststep:
         time_left_pos = (w // 2 , int(30 * self.scale['height']))
         utils.draw_text(text=f"Time Left: {round(self.time_left, 1)}s", position=time_left_pos, size=40, color="#FFFFFF", centered=True)
 
+        self.warmth_bar.draw(self.screen, self.warmth, 2)
+
+        self.popout.draw_all(self.dt)
+
         if self.UI_debug_mode:
 
             utils.draw_text(text=f"Fps:{round(self.clock.get_fps())}", position=(int(10*self.scale['width']), int(10*self.scale['height'])), size=int(20*self.scale['overall']), color="#FFFFFF")
@@ -433,8 +461,9 @@ class Froststep:
             utils.draw_text(text=f"Map pos: {self.world_pos}", position=(int(10*self.scale['width']), int(50*self.scale['height'])), size=int(20*self.scale['overall']), color="#FFFFFF")
             utils.draw_text(text=f"Warmth: {self.warmth:.2f}", position=(int(10*self.scale['width']), int(70*self.scale['height'])), size=int(20*self.scale['overall']), color="#FFFFFF")
             utils.draw_text(text=f"Mouse World Pos: {pygame.Vector2(pygame.mouse.get_pos())-offset}", position=(int(10*self.scale['width']), int(90*self.scale['height'])), size=int(20*self.scale['overall']), color="#FFFFFF")
+            utils.draw_text(text=f"Distance to player: {self.beacon.get_distance_from(self.player.world_pos)}", position=(int(10*self.scale['width']), int(110*self.scale['height'])), size=int(20*self.scale['overall']), color="#FFFFFF")
     
-    
+    #creation funcs
     def create_map(self, size=100):
         center_x, center_y = self.map_size[0] // 2, self.map_size[1] // 2
         for i in range(self.map_size[0] // size):
@@ -456,6 +485,7 @@ class Froststep:
         # OPTIMIZATION: Simple native Pygame Rect list. 
         # Collisions are checked in heavily optimized native C code via Pygame instead of NumPy.
         self.tree_rects = [t.rect for t in self.trees]
+
 
 #Entry point of the game
 if __name__ == "__main__":

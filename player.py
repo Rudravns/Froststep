@@ -131,6 +131,14 @@ class Player:
 
         self.image.rotate_images(int(self.player_direction - 90))
         return self.player_direction
+    
+    def get_screen_rect(self, offset):
+        screen_x = self.world_pos.x + offset[0]
+        screen_y = self.world_pos.y + offset[1]
+        
+        rect = self.cached_image.get_rect(center=(screen_x, screen_y)) # pyright: ignore[reportOptionalMemberAccess]
+        return rect
+
 
     def draw(self, debug, offset=(0,0), scale:dict = {"width": 1.0, "height": 1.0, "overall": 1.0}):
         img = self.image.get_image(self.image_index)

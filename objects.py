@@ -19,7 +19,7 @@ class Tree:
         self.size = size
         self.pos = pygame.Vector2(pos) # This is the world-space CENTER of the tree
         self.rect = pygame.Rect(0, 0, self.size, self.size)
-        self.rect.center = self.pos
+        self.rect.center = self.pos # pyright: ignore[reportAttributeAccessIssue]
         self.screen = pygame.display.get_surface()
         self.hit_timer = utils.Timer(0.5)
         self.regen_timer = utils.Timer(3)
@@ -37,8 +37,8 @@ class Tree:
             img_topleft_y = self.pos.y - img.get_height() / 2
             self.rect.width = bound_rect.width
             self.rect.height = bound_rect.height
-            self.rect.left = img_topleft_x + bound_rect.left
-            self.rect.top = img_topleft_y + bound_rect.top
+            self.rect.left = img_topleft_x + bound_rect.left # pyright: ignore[reportAttributeAccessIssue]
+            self.rect.top = img_topleft_y + bound_rect.top # pyright: ignore[reportAttributeAccessIssue]
 
     def draw(self, offset, debug):
         screen_pos = self.pos + pygame.Vector2(offset)
@@ -88,6 +88,7 @@ class Items:
     def __init__(self, size) -> None:
         self.item_texs = utils.SpriteSheet()
         self.item_texs.extract_single_image("items/twig.png", (size,size))
+        self.item_texs.extract_single_image("items/membrane.png", (size,size))
         self.size = size
         self.screen = pygame.display.get_surface()
 
