@@ -26,7 +26,7 @@ class Froststep:
         self.running = False
         
         #debug
-        self.Master_debug_mode = False
+        self.Master_debug_mode = True
         self.UI_debug_mode = False
         self.hitbox_debug = False
         self.console_debug = False
@@ -203,7 +203,7 @@ class Froststep:
                 self.player.update(100 * self.warmth, self.dt, self.map_size, self.beacon.pos, self.beacon.get_radius(), self.tree_rects, (offset_x, offset_y))
 
             # --- Game Over Check ---
-            if (self.player.is_dead or self.time_left <= 0 )and self.stage == "Running":
+            if (self.player.is_dead or self.time_left <= 0 or self.warmth <= 0) and self.stage == "Running":
                 self.stage = "Dead"
                 self.sound.play_sfx("DEATH")
             
@@ -356,12 +356,9 @@ class Froststep:
                 self.warmth = 1.4 # Permanent warmth!
                 self.win_circle_radius += 3000 * self.dt # Expand out to clear the fog rapidly
                 self.win_flash_alpha = max(0, self.win_flash_alpha - 150 * self.dt) # Fade out the bright flash
-            else:
+            elif self.stage == "Running":
                 # Only decrement timer if player hasn't won
                 self.time_left -= self.dt
-                if self.time_left <= 0 or self.warmth <= 0:
-                    self.death(self.screen.get_width(), self.screen.get_height())
-                    break
 
             #Update game state here
             pygame.display.flip()
@@ -772,7 +769,7 @@ class Froststep:
         
         # Reset inventory
         self.inventory = {
-            "membrane" : 4,
+            "membrane" : 20,
             "wood" : 4,
         } if self.Master_debug_mode else {}
         self.slot = 1
@@ -794,7 +791,7 @@ class Froststep:
             self.enemies.append(Spider((ex, ey)))
             
         # Reset game state variables
-        self.time_left = 120
+        self.time_left = 1
         self.warmth = 1
         self.has_won = False
         
