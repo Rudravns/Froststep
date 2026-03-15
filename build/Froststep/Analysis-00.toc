@@ -1918,10 +1918,6 @@
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
    'Game\\Lib\\pathlib\\_abc.py',
    'PYMODULE'),
-  ('_py_abc',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\_py_abc.py',
-   'PYMODULE'),
   ('tracemalloc',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
    'Game\\Lib\\tracemalloc.py',
@@ -1929,6 +1925,10 @@
   ('stringprep',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
    'Game\\Lib\\stringprep.py',
+   'PYMODULE'),
+  ('_py_abc',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\_py_abc.py',
    'PYMODULE'),
   ('Sound', 'C:\\Rudransh\\VS Code\\Froststep\\Sound.py', 'PYMODULE'),
   ('Beacon', 'C:\\Rudransh\\VS Code\\Froststep\\Beacon.py', 'PYMODULE'),
@@ -2599,89 +2599,89 @@
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
    'Game\\python313.dll',
    'BINARY'),
-  ('numpy.libs\\msvcp140-a4c2229bdc2a2a630acdc095b4d86008.dll',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\numpy.libs\\msvcp140-a4c2229bdc2a2a630acdc095b4d86008.dll',
-   'BINARY'),
   ('numpy.libs\\libscipy_openblas64_-9e3e5a4229c1ca39f10dc82bba9e2b2b.dll',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
    'Game\\Lib\\site-packages\\numpy.libs\\libscipy_openblas64_-9e3e5a4229c1ca39f10dc82bba9e2b2b.dll',
    'BINARY'),
-  ('libxmp.dll',
+  ('numpy.libs\\msvcp140-a4c2229bdc2a2a630acdc095b4d86008.dll',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\pygame\\libxmp.dll',
-   'BINARY'),
-  ('freetype.dll',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\pygame\\freetype.dll',
-   'BINARY'),
-  ('libogg-0.dll',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\pygame\\libogg-0.dll',
-   'BINARY'),
-  ('libjpeg-62.dll',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\pygame\\libjpeg-62.dll',
-   'BINARY'),
-  ('libtiff-5.dll',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\pygame\\libtiff-5.dll',
-   'BINARY'),
-  ('libpng16-16.dll',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\pygame\\libpng16-16.dll',
-   'BINARY'),
-  ('SDL2.dll',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\pygame\\SDL2.dll',
-   'BINARY'),
-  ('libjpeg-9.dll',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\pygame\\libjpeg-9.dll',
-   'BINARY'),
-  ('portmidi.dll',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\pygame\\portmidi.dll',
-   'BINARY'),
-  ('SDL2_mixer.dll',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\pygame\\SDL2_mixer.dll',
-   'BINARY'),
-  ('libwebpdemux-2.dll',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\pygame\\libwebpdemux-2.dll',
-   'BINARY'),
-  ('SDL2_ttf.dll',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\pygame\\SDL2_ttf.dll',
-   'BINARY'),
-  ('libmodplug-1.dll',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\pygame\\libmodplug-1.dll',
+   'Game\\Lib\\site-packages\\numpy.libs\\msvcp140-a4c2229bdc2a2a630acdc095b4d86008.dll',
    'BINARY'),
   ('libwavpack-1.dll',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
    'Game\\Lib\\site-packages\\pygame\\libwavpack-1.dll',
    'BINARY'),
-  ('SDL2_image.dll',
+  ('portmidi.dll',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\pygame\\SDL2_image.dll',
+   'Game\\Lib\\site-packages\\pygame\\portmidi.dll',
    'BINARY'),
-  ('zlib1.dll',
+  ('libjpeg-62.dll',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\pygame\\zlib1.dll',
+   'Game\\Lib\\site-packages\\pygame\\libjpeg-62.dll',
    'BINARY'),
-  ('libopusfile-0.dll',
+  ('freetype.dll',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\pygame\\libopusfile-0.dll',
+   'Game\\Lib\\site-packages\\pygame\\freetype.dll',
+   'BINARY'),
+  ('libmodplug-1.dll',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\site-packages\\pygame\\libmodplug-1.dll',
+   'BINARY'),
+  ('SDL2.dll',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\site-packages\\pygame\\SDL2.dll',
    'BINARY'),
   ('libopus-0.dll',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
    'Game\\Lib\\site-packages\\pygame\\libopus-0.dll',
    'BINARY'),
+  ('zlib1.dll',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\site-packages\\pygame\\zlib1.dll',
+   'BINARY'),
+  ('libpng16-16.dll',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\site-packages\\pygame\\libpng16-16.dll',
+   'BINARY'),
+  ('libtiff-5.dll',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\site-packages\\pygame\\libtiff-5.dll',
+   'BINARY'),
+  ('libopusfile-0.dll',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\site-packages\\pygame\\libopusfile-0.dll',
+   'BINARY'),
   ('libwebp-7.dll',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
    'Game\\Lib\\site-packages\\pygame\\libwebp-7.dll',
+   'BINARY'),
+  ('libwebpdemux-2.dll',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\site-packages\\pygame\\libwebpdemux-2.dll',
+   'BINARY'),
+  ('libogg-0.dll',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\site-packages\\pygame\\libogg-0.dll',
+   'BINARY'),
+  ('SDL2_mixer.dll',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\site-packages\\pygame\\SDL2_mixer.dll',
+   'BINARY'),
+  ('libjpeg-9.dll',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\site-packages\\pygame\\libjpeg-9.dll',
+   'BINARY'),
+  ('libxmp.dll',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\site-packages\\pygame\\libxmp.dll',
+   'BINARY'),
+  ('SDL2_image.dll',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\site-packages\\pygame\\SDL2_image.dll',
+   'BINARY'),
+  ('SDL2_ttf.dll',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\site-packages\\pygame\\SDL2_ttf.dll',
    'BINARY'),
   ('select.pyd',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
@@ -2926,9 +2926,9 @@
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
    'Game\\Lib\\site-packages\\pygame\\base.cp313-win_amd64.pyd',
    'EXTENSION'),
-  ('api-ms-win-crt-process-l1-1-0.dll',
+  ('api-ms-win-crt-runtime-l1-1-0.dll',
    'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
-   'Toolkit\\api-ms-win-crt-process-l1-1-0.dll',
+   'Toolkit\\api-ms-win-crt-runtime-l1-1-0.dll',
    'BINARY'),
   ('api-ms-win-crt-math-l1-1-0.dll',
    'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
@@ -2938,29 +2938,25 @@
    'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
    'Toolkit\\api-ms-win-crt-locale-l1-1-0.dll',
    'BINARY'),
-  ('api-ms-win-crt-runtime-l1-1-0.dll',
+  ('api-ms-win-crt-process-l1-1-0.dll',
    'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
-   'Toolkit\\api-ms-win-crt-runtime-l1-1-0.dll',
+   'Toolkit\\api-ms-win-crt-process-l1-1-0.dll',
    'BINARY'),
   ('api-ms-win-crt-conio-l1-1-0.dll',
    'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
    'Toolkit\\api-ms-win-crt-conio-l1-1-0.dll',
    'BINARY'),
-  ('VCRUNTIME140.dll',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\VCRUNTIME140.dll',
-   'BINARY'),
-  ('api-ms-win-crt-environment-l1-1-0.dll',
+  ('api-ms-win-crt-heap-l1-1-0.dll',
    'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
-   'Toolkit\\api-ms-win-crt-environment-l1-1-0.dll',
+   'Toolkit\\api-ms-win-crt-heap-l1-1-0.dll',
    'BINARY'),
   ('api-ms-win-crt-filesystem-l1-1-0.dll',
    'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
    'Toolkit\\api-ms-win-crt-filesystem-l1-1-0.dll',
    'BINARY'),
-  ('api-ms-win-crt-convert-l1-1-0.dll',
+  ('api-ms-win-crt-environment-l1-1-0.dll',
    'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
-   'Toolkit\\api-ms-win-crt-convert-l1-1-0.dll',
+   'Toolkit\\api-ms-win-crt-environment-l1-1-0.dll',
    'BINARY'),
   ('api-ms-win-crt-string-l1-1-0.dll',
    'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
@@ -2970,17 +2966,17 @@
    'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
    'Toolkit\\api-ms-win-crt-stdio-l1-1-0.dll',
    'BINARY'),
-  ('api-ms-win-crt-heap-l1-1-0.dll',
-   'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
-   'Toolkit\\api-ms-win-crt-heap-l1-1-0.dll',
-   'BINARY'),
   ('api-ms-win-crt-time-l1-1-0.dll',
    'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
    'Toolkit\\api-ms-win-crt-time-l1-1-0.dll',
    'BINARY'),
-  ('VCRUNTIME140_1.dll',
+  ('api-ms-win-crt-convert-l1-1-0.dll',
+   'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
+   'Toolkit\\api-ms-win-crt-convert-l1-1-0.dll',
+   'BINARY'),
+  ('VCRUNTIME140.dll',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\VCRUNTIME140_1.dll',
+   'Game\\VCRUNTIME140.dll',
    'BINARY'),
   ('api-ms-win-crt-utility-l1-1-0.dll',
    'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
@@ -2990,13 +2986,9 @@
    'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
    'Toolkit\\api-ms-win-crt-private-l1-1-0.dll',
    'BINARY'),
-  ('pygame\\SDL2.dll',
+  ('VCRUNTIME140_1.dll',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\pygame\\SDL2.dll',
-   'BINARY'),
-  ('pygame\\libwebp-7.dll',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\pygame\\libwebp-7.dll',
+   'Game\\VCRUNTIME140_1.dll',
    'BINARY'),
   ('pygame\\libogg-0.dll',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
@@ -3006,17 +2998,25 @@
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
    'Game\\Lib\\site-packages\\pygame\\libopus-0.dll',
    'BINARY'),
+  ('pygame\\libwebp-7.dll',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\site-packages\\pygame\\libwebp-7.dll',
+   'BINARY'),
+  ('pygame\\SDL2.dll',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\site-packages\\pygame\\SDL2.dll',
+   'BINARY'),
   ('libffi-8.dll',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
    'Game\\DLLs\\libffi-8.dll',
    'BINARY'),
-  ('libcrypto-3.dll',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\DLLs\\libcrypto-3.dll',
-   'BINARY'),
   ('libssl-3.dll',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
    'Game\\DLLs\\libssl-3.dll',
+   'BINARY'),
+  ('libcrypto-3.dll',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\DLLs\\libcrypto-3.dll',
    'BINARY'),
   ('python3.dll',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing Game\\python3.dll",
@@ -3041,29 +3041,9 @@
    'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
    'Toolkit\\ucrtbase.dll',
    'BINARY'),
-  ('api-ms-win-core-libraryloader-l1-1-0.dll',
+  ('api-ms-win-core-profile-l1-1-0.dll',
    'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
-   'Toolkit\\api-ms-win-core-libraryloader-l1-1-0.dll',
-   'BINARY'),
-  ('api-ms-win-core-file-l2-1-0.dll',
-   'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
-   'Toolkit\\api-ms-win-core-file-l2-1-0.dll',
-   'BINARY'),
-  ('api-ms-win-core-errorhandling-l1-1-0.dll',
-   'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
-   'Toolkit\\api-ms-win-core-errorhandling-l1-1-0.dll',
-   'BINARY'),
-  ('api-ms-win-core-sysinfo-l1-1-0.dll',
-   'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
-   'Toolkit\\api-ms-win-core-sysinfo-l1-1-0.dll',
-   'BINARY'),
-  ('api-ms-win-core-rtlsupport-l1-1-0.dll',
-   'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
-   'Toolkit\\api-ms-win-core-rtlsupport-l1-1-0.dll',
-   'BINARY'),
-  ('api-ms-win-core-interlocked-l1-1-0.dll',
-   'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
-   'Toolkit\\api-ms-win-core-interlocked-l1-1-0.dll',
+   'Toolkit\\api-ms-win-core-profile-l1-1-0.dll',
    'BINARY'),
   ('api-ms-win-core-processenvironment-l1-1-0.dll',
    'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
@@ -3073,77 +3053,97 @@
    'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
    'Toolkit\\api-ms-win-core-synch-l1-2-0.dll',
    'BINARY'),
-  ('api-ms-win-core-processthreads-l1-1-1.dll',
+  ('api-ms-win-core-synch-l1-1-0.dll',
    'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
-   'Toolkit\\api-ms-win-core-processthreads-l1-1-1.dll',
+   'Toolkit\\api-ms-win-core-synch-l1-1-0.dll',
    'BINARY'),
-  ('api-ms-win-core-heap-l1-1-0.dll',
+  ('api-ms-win-core-libraryloader-l1-1-0.dll',
    'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
-   'Toolkit\\api-ms-win-core-heap-l1-1-0.dll',
-   'BINARY'),
-  ('api-ms-win-core-profile-l1-1-0.dll',
-   'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
-   'Toolkit\\api-ms-win-core-profile-l1-1-0.dll',
-   'BINARY'),
-  ('api-ms-win-core-datetime-l1-1-0.dll',
-   'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
-   'Toolkit\\api-ms-win-core-datetime-l1-1-0.dll',
+   'Toolkit\\api-ms-win-core-libraryloader-l1-1-0.dll',
    'BINARY'),
   ('api-ms-win-core-debug-l1-1-0.dll',
    'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
    'Toolkit\\api-ms-win-core-debug-l1-1-0.dll',
    'BINARY'),
-  ('api-ms-win-core-fibers-l1-1-0.dll',
+  ('api-ms-win-core-heap-l1-1-0.dll',
    'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
-   'Toolkit\\api-ms-win-core-fibers-l1-1-0.dll',
+   'Toolkit\\api-ms-win-core-heap-l1-1-0.dll',
    'BINARY'),
-  ('api-ms-win-core-util-l1-1-0.dll',
+  ('api-ms-win-core-sysinfo-l1-1-0.dll',
    'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
-   'Toolkit\\api-ms-win-core-util-l1-1-0.dll',
-   'BINARY'),
-  ('api-ms-win-core-string-l1-1-0.dll',
-   'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
-   'Toolkit\\api-ms-win-core-string-l1-1-0.dll',
-   'BINARY'),
-  ('api-ms-win-core-console-l1-1-0.dll',
-   'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
-   'Toolkit\\api-ms-win-core-console-l1-1-0.dll',
-   'BINARY'),
-  ('api-ms-win-core-file-l1-1-0.dll',
-   'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
-   'Toolkit\\api-ms-win-core-file-l1-1-0.dll',
-   'BINARY'),
-  ('api-ms-win-core-file-l1-2-0.dll',
-   'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
-   'Toolkit\\api-ms-win-core-file-l1-2-0.dll',
-   'BINARY'),
-  ('api-ms-win-core-namedpipe-l1-1-0.dll',
-   'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
-   'Toolkit\\api-ms-win-core-namedpipe-l1-1-0.dll',
-   'BINARY'),
-  ('api-ms-win-core-timezone-l1-1-0.dll',
-   'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
-   'Toolkit\\api-ms-win-core-timezone-l1-1-0.dll',
-   'BINARY'),
-  ('api-ms-win-core-processthreads-l1-1-0.dll',
-   'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
-   'Toolkit\\api-ms-win-core-processthreads-l1-1-0.dll',
-   'BINARY'),
-  ('api-ms-win-core-localization-l1-2-0.dll',
-   'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
-   'Toolkit\\api-ms-win-core-localization-l1-2-0.dll',
-   'BINARY'),
-  ('api-ms-win-core-synch-l1-1-0.dll',
-   'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
-   'Toolkit\\api-ms-win-core-synch-l1-1-0.dll',
+   'Toolkit\\api-ms-win-core-sysinfo-l1-1-0.dll',
    'BINARY'),
   ('api-ms-win-core-handle-l1-1-0.dll',
    'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
    'Toolkit\\api-ms-win-core-handle-l1-1-0.dll',
    'BINARY'),
+  ('api-ms-win-core-processthreads-l1-1-1.dll',
+   'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
+   'Toolkit\\api-ms-win-core-processthreads-l1-1-1.dll',
+   'BINARY'),
+  ('api-ms-win-core-namedpipe-l1-1-0.dll',
+   'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
+   'Toolkit\\api-ms-win-core-namedpipe-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-rtlsupport-l1-1-0.dll',
+   'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
+   'Toolkit\\api-ms-win-core-rtlsupport-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-errorhandling-l1-1-0.dll',
+   'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
+   'Toolkit\\api-ms-win-core-errorhandling-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-fibers-l1-1-0.dll',
+   'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
+   'Toolkit\\api-ms-win-core-fibers-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-console-l1-1-0.dll',
+   'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
+   'Toolkit\\api-ms-win-core-console-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-datetime-l1-1-0.dll',
+   'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
+   'Toolkit\\api-ms-win-core-datetime-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-string-l1-1-0.dll',
+   'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
+   'Toolkit\\api-ms-win-core-string-l1-1-0.dll',
+   'BINARY'),
   ('api-ms-win-core-memory-l1-1-0.dll',
    'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
    'Toolkit\\api-ms-win-core-memory-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-file-l1-2-0.dll',
+   'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
+   'Toolkit\\api-ms-win-core-file-l1-2-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-timezone-l1-1-0.dll',
+   'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
+   'Toolkit\\api-ms-win-core-timezone-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-localization-l1-2-0.dll',
+   'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
+   'Toolkit\\api-ms-win-core-localization-l1-2-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-file-l1-1-0.dll',
+   'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
+   'Toolkit\\api-ms-win-core-file-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-file-l2-1-0.dll',
+   'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
+   'Toolkit\\api-ms-win-core-file-l2-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-processthreads-l1-1-0.dll',
+   'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
+   'Toolkit\\api-ms-win-core-processthreads-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-interlocked-l1-1-0.dll',
+   'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
+   'Toolkit\\api-ms-win-core-interlocked-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-util-l1-1-0.dll',
+   'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance '
+   'Toolkit\\api-ms-win-core-util-l1-1-0.dll',
    'BINARY')],
  [],
  [],
@@ -3259,17 +3259,21 @@
   ('Assets\\items\\twig.png',
    'C:\\Rudransh\\VS Code\\Froststep\\Assets\\items\\twig.png',
    'DATA'),
-  ('setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\top_level.txt',
+  ('setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\REQUESTED',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\top_level.txt',
+   'Game\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\REQUESTED',
+   'DATA'),
+  ('setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\INSTALLER',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\INSTALLER',
    'DATA'),
   ('setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\RECORD',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
    'Game\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\RECORD',
    'DATA'),
-  ('setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\INSTALLER',
+  ('setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\WHEEL',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\INSTALLER',
+   'Game\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\WHEEL',
    'DATA'),
   ('setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\METADATA',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
@@ -3279,13 +3283,9 @@
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
    'Game\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\LICENSE',
    'DATA'),
-  ('setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\REQUESTED',
+  ('setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\top_level.txt',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\REQUESTED',
-   'DATA'),
-  ('setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\WHEEL',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\WHEEL',
+   'Game\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\top_level.txt',
    'DATA'),
   ('setuptools\\_vendor\\jaraco\\text\\Lorem ipsum.txt',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
@@ -3300,201 +3300,178 @@
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
    'Game\\Lib\\site-packages\\pygame\\pygame_icon.bmp',
    'DATA'),
-  ('numpy-2.4.1.dist-info\\WHEEL',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\WHEEL',
-   'DATA'),
-  ('numpy-2.4.1.dist-info\\licenses\\numpy\\linalg\\lapack_lite\\LICENSE.txt',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\licenses\\numpy\\linalg\\lapack_lite\\LICENSE.txt',
-   'DATA'),
-  ('wheel-0.45.1.dist-info\\entry_points.txt',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\wheel-0.45.1.dist-info\\entry_points.txt',
-   'DATA'),
   ('wheel-0.45.1.dist-info\\RECORD',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
    'Game\\Lib\\site-packages\\wheel-0.45.1.dist-info\\RECORD',
-   'DATA'),
-  ('numpy-2.4.1.dist-info\\licenses\\numpy\\random\\src\\mt19937\\LICENSE.md',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\licenses\\numpy\\random\\src\\mt19937\\LICENSE.md',
-   'DATA'),
-  ('numpy-2.4.1.dist-info\\licenses\\numpy\\random\\src\\sfc64\\LICENSE.md',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\licenses\\numpy\\random\\src\\sfc64\\LICENSE.md',
-   'DATA'),
-  ('wheel-0.45.1.dist-info\\LICENSE.txt',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\wheel-0.45.1.dist-info\\LICENSE.txt',
-   'DATA'),
-  ('wheel-0.45.1.dist-info\\METADATA',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\wheel-0.45.1.dist-info\\METADATA',
-   'DATA'),
-  ('wheel-0.45.1.dist-info\\REQUESTED',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\wheel-0.45.1.dist-info\\REQUESTED',
-   'DATA'),
-  ('numpy-2.4.1.dist-info\\licenses\\numpy\\random\\src\\philox\\LICENSE.md',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\licenses\\numpy\\random\\src\\philox\\LICENSE.md',
-   'DATA'),
-  ('numpy-2.4.1.dist-info\\licenses\\numpy\\random\\LICENSE.md',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\licenses\\numpy\\random\\LICENSE.md',
-   'DATA'),
-  ('wheel-0.45.1.dist-info\\WHEEL',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\wheel-0.45.1.dist-info\\WHEEL',
-   'DATA'),
-  ('numpy-2.4.1.dist-info\\licenses\\numpy\\_core\\include\\numpy\\libdivide\\LICENSE.txt',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\licenses\\numpy\\_core\\include\\numpy\\libdivide\\LICENSE.txt',
-   'DATA'),
-  ('numpy-2.4.1.dist-info\\licenses\\numpy\\_core\\src\\highway\\LICENSE',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\licenses\\numpy\\_core\\src\\highway\\LICENSE',
-   'DATA'),
-  ('numpy-2.4.1.dist-info\\METADATA',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\METADATA',
-   'DATA'),
-  ('numpy-2.4.1.dist-info\\RECORD',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\RECORD',
-   'DATA'),
-  ('numpy-2.4.1.dist-info\\INSTALLER',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\INSTALLER',
-   'DATA'),
-  ('numpy-2.4.1.dist-info\\licenses\\numpy\\_core\\src\\npysort\\x86-simd-sort\\LICENSE.md',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\licenses\\numpy\\_core\\src\\npysort\\x86-simd-sort\\LICENSE.md',
-   'DATA'),
-  ('numpy-2.4.1.dist-info\\REQUESTED',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\REQUESTED',
-   'DATA'),
-  ('numpy-2.4.1.dist-info\\licenses\\numpy\\_core\\src\\umath\\svml\\LICENSE',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\licenses\\numpy\\_core\\src\\umath\\svml\\LICENSE',
-   'DATA'),
-  ('numpy-2.4.1.dist-info\\licenses\\numpy\\random\\src\\distributions\\LICENSE.md',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\licenses\\numpy\\random\\src\\distributions\\LICENSE.md',
-   'DATA'),
-  ('numpy-2.4.1.dist-info\\licenses\\LICENSE.txt',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\licenses\\LICENSE.txt',
-   'DATA'),
-  ('numpy-2.4.1.dist-info\\DELVEWHEEL',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\DELVEWHEEL',
-   'DATA'),
-  ('numpy-2.4.1.dist-info\\licenses\\numpy\\fft\\pocketfft\\LICENSE.md',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\licenses\\numpy\\fft\\pocketfft\\LICENSE.md',
    'DATA'),
   ('numpy-2.4.1.dist-info\\licenses\\numpy\\_core\\src\\multiarray\\dragon4_LICENSE.txt',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
    'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\licenses\\numpy\\_core\\src\\multiarray\\dragon4_LICENSE.txt',
    'DATA'),
-  ('numpy-2.4.1.dist-info\\entry_points.txt',
+  ('numpy-2.4.1.dist-info\\WHEEL',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\entry_points.txt',
+   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\WHEEL',
    'DATA'),
-  ('numpy-2.4.1.dist-info\\licenses\\numpy\\ma\\LICENSE',
+  ('numpy-2.4.1.dist-info\\licenses\\numpy\\random\\src\\distributions\\LICENSE.md',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\licenses\\numpy\\ma\\LICENSE',
-   'DATA'),
-  ('numpy-2.4.1.dist-info\\licenses\\numpy\\_core\\src\\common\\pythoncapi-compat\\COPYING',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\licenses\\numpy\\_core\\src\\common\\pythoncapi-compat\\COPYING',
+   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\licenses\\numpy\\random\\src\\distributions\\LICENSE.md',
    'DATA'),
   ('numpy-2.4.1.dist-info\\licenses\\numpy\\random\\src\\splitmix64\\LICENSE.md',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
    'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\licenses\\numpy\\random\\src\\splitmix64\\LICENSE.md',
    'DATA'),
-  ('numpy-2.4.1.dist-info\\licenses\\numpy\\random\\src\\pcg64\\LICENSE.md',
+  ('numpy-2.4.1.dist-info\\DELVEWHEEL',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\licenses\\numpy\\random\\src\\pcg64\\LICENSE.md',
+   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\DELVEWHEEL',
+   'DATA'),
+  ('wheel-0.45.1.dist-info\\REQUESTED',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\site-packages\\wheel-0.45.1.dist-info\\REQUESTED',
+   'DATA'),
+  ('numpy-2.4.1.dist-info\\licenses\\numpy\\linalg\\lapack_lite\\LICENSE.txt',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\licenses\\numpy\\linalg\\lapack_lite\\LICENSE.txt',
+   'DATA'),
+  ('numpy-2.4.1.dist-info\\licenses\\numpy\\_core\\src\\common\\pythoncapi-compat\\COPYING',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\licenses\\numpy\\_core\\src\\common\\pythoncapi-compat\\COPYING',
+   'DATA'),
+  ('numpy-2.4.1.dist-info\\licenses\\numpy\\ma\\LICENSE',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\licenses\\numpy\\ma\\LICENSE',
+   'DATA'),
+  ('numpy-2.4.1.dist-info\\licenses\\numpy\\_core\\include\\numpy\\libdivide\\LICENSE.txt',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\licenses\\numpy\\_core\\include\\numpy\\libdivide\\LICENSE.txt',
+   'DATA'),
+  ('wheel-0.45.1.dist-info\\entry_points.txt',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\site-packages\\wheel-0.45.1.dist-info\\entry_points.txt',
+   'DATA'),
+  ('numpy-2.4.1.dist-info\\REQUESTED',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\REQUESTED',
+   'DATA'),
+  ('numpy-2.4.1.dist-info\\METADATA',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\METADATA',
+   'DATA'),
+  ('numpy-2.4.1.dist-info\\licenses\\numpy\\_core\\src\\npysort\\x86-simd-sort\\LICENSE.md',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\licenses\\numpy\\_core\\src\\npysort\\x86-simd-sort\\LICENSE.md',
+   'DATA'),
+  ('wheel-0.45.1.dist-info\\WHEEL',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\site-packages\\wheel-0.45.1.dist-info\\WHEEL',
+   'DATA'),
+  ('numpy-2.4.1.dist-info\\licenses\\numpy\\random\\src\\mt19937\\LICENSE.md',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\licenses\\numpy\\random\\src\\mt19937\\LICENSE.md',
+   'DATA'),
+  ('wheel-0.45.1.dist-info\\LICENSE.txt',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\site-packages\\wheel-0.45.1.dist-info\\LICENSE.txt',
+   'DATA'),
+  ('numpy-2.4.1.dist-info\\licenses\\numpy\\_core\\src\\highway\\LICENSE',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\licenses\\numpy\\_core\\src\\highway\\LICENSE',
    'DATA'),
   ('wheel-0.45.1.dist-info\\INSTALLER',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
    'Game\\Lib\\site-packages\\wheel-0.45.1.dist-info\\INSTALLER',
    'DATA'),
+  ('numpy-2.4.1.dist-info\\licenses\\numpy\\random\\src\\philox\\LICENSE.md',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\licenses\\numpy\\random\\src\\philox\\LICENSE.md',
+   'DATA'),
+  ('numpy-2.4.1.dist-info\\licenses\\numpy\\fft\\pocketfft\\LICENSE.md',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\licenses\\numpy\\fft\\pocketfft\\LICENSE.md',
+   'DATA'),
+  ('numpy-2.4.1.dist-info\\licenses\\numpy\\_core\\src\\umath\\svml\\LICENSE',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\licenses\\numpy\\_core\\src\\umath\\svml\\LICENSE',
+   'DATA'),
+  ('numpy-2.4.1.dist-info\\licenses\\numpy\\random\\LICENSE.md',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\licenses\\numpy\\random\\LICENSE.md',
+   'DATA'),
+  ('numpy-2.4.1.dist-info\\licenses\\numpy\\random\\src\\pcg64\\LICENSE.md',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\licenses\\numpy\\random\\src\\pcg64\\LICENSE.md',
+   'DATA'),
+  ('numpy-2.4.1.dist-info\\INSTALLER',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\INSTALLER',
+   'DATA'),
+  ('wheel-0.45.1.dist-info\\METADATA',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\site-packages\\wheel-0.45.1.dist-info\\METADATA',
+   'DATA'),
+  ('numpy-2.4.1.dist-info\\RECORD',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\RECORD',
+   'DATA'),
+  ('numpy-2.4.1.dist-info\\licenses\\numpy\\random\\src\\sfc64\\LICENSE.md',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\licenses\\numpy\\random\\src\\sfc64\\LICENSE.md',
+   'DATA'),
+  ('numpy-2.4.1.dist-info\\licenses\\LICENSE.txt',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\licenses\\LICENSE.txt',
+   'DATA'),
+  ('numpy-2.4.1.dist-info\\entry_points.txt',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\site-packages\\numpy-2.4.1.dist-info\\entry_points.txt',
+   'DATA'),
   ('base_library.zip',
-   'C:\\Rudransh\\VS Code\\Froststep\\build\\FrostStep\\base_library.zip',
+   'C:\\Rudransh\\VS Code\\Froststep\\build\\Froststep\\base_library.zip',
    'DATA')],
- [('genericpath',
+ [('sre_parse',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\genericpath.py',
+   'Game\\Lib\\sre_parse.py',
    'PYMODULE'),
-  ('stat',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing Game\\Lib\\stat.py",
-   'PYMODULE'),
-  ('operator',
+  ('ntpath',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\operator.py',
+   'Game\\Lib\\ntpath.py',
    'PYMODULE'),
-  ('abc',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing Game\\Lib\\abc.py",
-   'PYMODULE'),
-  ('copyreg',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\copyreg.py',
-   'PYMODULE'),
-  ('heapq',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\heapq.py',
-   'PYMODULE'),
-  ('keyword',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\keyword.py',
+  ('enum',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing Game\\Lib\\enum.py",
    'PYMODULE'),
   ('warnings',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
    'Game\\Lib\\warnings.py',
    'PYMODULE'),
-  ('sre_parse',
+  ('copyreg',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\sre_parse.py',
+   'Game\\Lib\\copyreg.py',
    'PYMODULE'),
-  ('enum',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing Game\\Lib\\enum.py",
-   'PYMODULE'),
-  ('sre_constants',
+  ('reprlib',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\sre_constants.py',
+   'Game\\Lib\\reprlib.py',
    'PYMODULE'),
-  ('linecache',
+  ('traceback',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\linecache.py',
+   'Game\\Lib\\traceback.py',
    'PYMODULE'),
-  ('sre_compile',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\sre_compile.py',
-   'PYMODULE'),
-  ('locale',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\locale.py',
+  ('stat',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing Game\\Lib\\stat.py",
    'PYMODULE'),
   ('_weakrefset',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
    'Game\\Lib\\_weakrefset.py',
    'PYMODULE'),
-  ('functools',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\functools.py',
-   'PYMODULE'),
   ('types',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
    'Game\\Lib\\types.py',
    'PYMODULE'),
-  ('traceback',
+  ('sre_compile',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\traceback.py',
+   'Game\\Lib\\sre_compile.py',
+   'PYMODULE'),
+  ('linecache',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\linecache.py',
    'PYMODULE'),
   ('encodings.zlib_codec',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
@@ -3984,21 +3961,17 @@
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
    'Game\\Lib\\encodings\\__init__.py',
    'PYMODULE'),
-  ('weakref',
+  ('genericpath',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\weakref.py',
-   'PYMODULE'),
-  ('reprlib',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\reprlib.py',
+   'Game\\Lib\\genericpath.py',
    'PYMODULE'),
   ('posixpath',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
    'Game\\Lib\\posixpath.py',
    'PYMODULE'),
-  ('ntpath',
+  ('functools',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\ntpath.py',
+   'Game\\Lib\\functools.py',
    'PYMODULE'),
   ('re._parser',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
@@ -4020,20 +3993,47 @@
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
    'Game\\Lib\\re\\__init__.py',
    'PYMODULE'),
-  ('collections',
-   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\collections\\__init__.py',
-   'PYMODULE'),
   ('_collections_abc',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
    'Game\\Lib\\_collections_abc.py',
    'PYMODULE'),
-  ('codecs',
+  ('keyword',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
-   'Game\\Lib\\codecs.py',
+   'Game\\Lib\\keyword.py',
+   'PYMODULE'),
+  ('sre_constants',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\sre_constants.py',
+   'PYMODULE'),
+  ('abc',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing Game\\Lib\\abc.py",
+   'PYMODULE'),
+  ('weakref',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\weakref.py',
+   'PYMODULE'),
+  ('heapq',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\heapq.py',
+   'PYMODULE'),
+  ('collections',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\collections\\__init__.py',
+   'PYMODULE'),
+  ('operator',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\operator.py',
+   'PYMODULE'),
+  ('locale',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\locale.py',
    'PYMODULE'),
   ('io',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing Game\\Lib\\io.py",
+   'PYMODULE'),
+  ('codecs',
+   "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing "
+   'Game\\Lib\\codecs.py',
    'PYMODULE'),
   ('os',
    "C:\\Users\\Rudransh\\Desktop\\Rudransh's python\\Racing Game\\Lib\\os.py",

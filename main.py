@@ -791,7 +791,7 @@ class Froststep:
             self.enemies.append(Spider((ex, ey)))
             
         # Reset game state variables
-        self.time_left = 1
+        self.time_left = 360
         self.warmth = 1
         self.has_won = False
         

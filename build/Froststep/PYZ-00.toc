@@ -1,4 +1,4 @@
-('C:\\Rudransh\\VS Code\\Froststep\\build\\FrostStep\\PYZ-00.pyz',
+('C:\\Rudransh\\VS Code\\Froststep\\build\\Froststep\\PYZ-00.pyz',
  [('Beacon', 'C:\\Rudransh\\VS Code\\Froststep\\Beacon.py', 'PYMODULE'),
   ('Sound', 'C:\\Rudransh\\VS Code\\Froststep\\Sound.py', 'PYMODULE'),
   ('__future__',
