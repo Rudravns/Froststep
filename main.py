@@ -26,7 +26,7 @@ class Froststep:
         self.running = False
         
         #debug
-        self.Master_debug_mode = True
+        self.Master_debug_mode = False
         self.UI_debug_mode = False
         self.hitbox_debug = False
         self.console_debug = False
